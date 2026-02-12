@@ -13,6 +13,8 @@ import java.util.List;
 
 public class GUI1_1 extends JFrame {
 
+    private final java.util.Set<Integer> savedPageIds = new java.util.HashSet<>();
+
     private JList<WikiSearchResult> resultsList;
 
     // helper inside GUI class
@@ -56,10 +58,15 @@ public class GUI1_1 extends JFrame {
 
         // ✅ renderer goes RIGHT HERE
         resultsList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+
+            boolean isSaved = savedPageIds.contains(value.getPageId());
+
             String snippet = shortSnippet(value.getSnippet());
 
+            String titleHtml = (isSaved ? "✅ " : "") + value.getTitle();
+
             String html = "<html>"
-                    + "<b>" + value.getTitle() + "</b>"
+                    + "<b>" + titleHtml + "</b>"
                     + " &nbsp; <span style='color:gray'>"
                     + "(pageId: " + value.getPageId()
                     + ", words: " + value.getWordCount()
@@ -81,6 +88,7 @@ public class GUI1_1 extends JFrame {
             }
             return label;
         });
+        
 
         JScrollPane scrollPane = new JScrollPane(resultsList);
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
@@ -99,49 +107,67 @@ public class GUI1_1 extends JFrame {
 
         // ===== Search button =====
         searchButton.addActionListener(e -> {
-            final String keyword = searchField.getText().trim();
-            if (keyword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Type a keyword first.");
-                return;
-            }
+          final String keyword = searchField.getText().trim();
+          if (keyword.isEmpty()) {
+              JOptionPane.showMessageDialog(this, "Type a keyword first.");
+              return;
+          }
 
-            searchButton.setEnabled(false);
-            statusLabel.setText("Searching Wikipedia...");
+          searchButton.setEnabled(false);
+          statusLabel.setText("Searching Wikipedia...");
 
-            new SwingWorker<List<WikiSearchResult>, Void>() {
-                private Exception error;
+          new SwingWorker<List<WikiSearchResult>, Void>() {
+              private Exception error;
 
-                @Override
-                protected List<WikiSearchResult> doInBackground() {
-                    try {
-                        return api.search(keyword, 50, 0);
-                    } catch (Exception ex) {
-                        error = ex;
-                        return java.util.Collections.emptyList();
-                    }
-                }
+              @Override
+              protected List<WikiSearchResult> doInBackground() {
+                  try {
+                      return api.search(keyword, 50, 0);
+                  } catch (Exception ex) {
+                      error = ex;
+                      return java.util.Collections.emptyList();
+                  }
+              }
 
-                @Override
-                protected void done() {
-                    try {
-                        if (error != null) throw error;
+              @Override
+              protected void done() {
+                  try {
+                      if (error != null) throw error;
 
-                        List<WikiSearchResult> results = get();
-                        listModel.clear();
-                        for (WikiSearchResult r : results) listModel.addElement(r);
+                      List<WikiSearchResult> results = get();
 
-                        statusLabel.setText("Found " + results.size() + " results.");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        statusLabel.setText("Error.");
-                        JOptionPane.showMessageDialog(GUI1_1.this,
-                                "API error: " + ex.getMessage());
-                    } finally {
-                        searchButton.setEnabled(true);
-                    }
-                }
-            }.execute();
-        });
+                      // ✅ Load saved ids from DB so the renderer can show ✅
+                      savedPageIds.clear();
+                      try {
+                          ArticleDAO dao = new ArticleDAO();
+                          savedPageIds.addAll(dao.getAllSavedPageIds());
+                      } catch (Exception dbEx) {
+                          dbEx.printStackTrace(); // if DB check fails, list still shows normally
+                      }
+
+                      // Populate list
+                      listModel.clear();
+                      for (WikiSearchResult r : results) {
+                          listModel.addElement(r);
+                      }
+
+                      // ✅ Refresh list display (forces renderer re-run)
+                      resultsList.repaint();
+
+                      statusLabel.setText("Found " + results.size() + " results.");
+
+                  } catch (Exception ex) {
+                      ex.printStackTrace();
+                      statusLabel.setText("Error.");
+                      JOptionPane.showMessageDialog(GUI1_1.this,
+                              "API error: " + ex.getMessage());
+                  } finally {
+                      searchButton.setEnabled(true);
+                  }
+              }
+          }.execute();
+      });
+
 
         // ===== Read full article =====
         readButton.addActionListener(e -> {
@@ -194,60 +220,50 @@ public class GUI1_1 extends JFrame {
 
         // ===== Save to DB (with text) =====
         saveButton.addActionListener(e -> {
+
             WikiSearchResult selected = resultsList.getSelectedValue();
             if (selected == null) {
                 JOptionPane.showMessageDialog(this, "Select an article first.");
                 return;
             }
 
-            saveButton.setEnabled(false);
-            statusLabel.setText("Saving to DB...");
+            try {
+                // Fetch full article text from API
+                String fullText = api.fetchFullText(selected.getPageId());
 
-            // ⚠ This is a network call too -> use SwingWorker to avoid freezing UI
-            new SwingWorker<Void, Void>() {
-                private Exception error;
+                // Create Article model object
+                Article a = new Article(selected.getPageId(), selected.getTitle());
+                a.setSnippet(WikiApiClient.stripHtml(selected.getSnippet()));
+                a.setSize(selected.getSize());
+                a.setWordCount(selected.getWordCount());
+                a.setText(fullText);
 
-                @Override
-                protected Void doInBackground() {
-                    try {
-                        String fullText = api.fetchFullText(selected.getPageId());
+                // Insert into DB
+                ArticleDAO dao = new ArticleDAO();
+                dao.insertArticle(a);
 
-                        Article a = new Article(selected.getPageId(), selected.getTitle());
-                        a.setSnippet(WikiApiClient.stripHtml(selected.getSnippet()));
-                        a.setSize(selected.getSize());
-                        a.setWordCount(selected.getWordCount());
-                        a.setText(fullText);
+                // 🔹 Mark as saved locally
+                savedPageIds.add(selected.getPageId());
 
-                        ArticleDAO dao = new ArticleDAO();
-                        dao.insertArticle(a);
-                        return null;
-                    } catch (Exception ex) {
-                        error = ex;
-                        return null;
-                    }
+                // 🔹 Refresh renderer so ✅ appears immediately
+                resultsList.repaint();
+
+                JOptionPane.showMessageDialog(this, "Saved to DB (with text).");
+
+            } catch (Exception ex) {
+
+                if (ex instanceof java.sql.SQLException
+                        && "23505".equals(((java.sql.SQLException) ex).getSQLState())) {
+
+                    JOptionPane.showMessageDialog(this, "This article is already saved.");
+
+                } else {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "DB error: " + ex.getMessage());
                 }
-
-                @Override
-                protected void done() {
-                    try {
-                        if (error != null) throw error;
-                        JOptionPane.showMessageDialog(GUI1_1.this, "Saved to DB (with text).");
-                        statusLabel.setText("Saved.");
-                    } catch (Exception ex) {
-                        if (ex instanceof java.sql.SQLException
-                                && "23505".equals(((java.sql.SQLException) ex).getSQLState())) {
-                            JOptionPane.showMessageDialog(GUI1_1.this, "This article is already saved.");
-                        } else {
-                            ex.printStackTrace();
-                            JOptionPane.showMessageDialog(GUI1_1.this, "DB error: " + ex.getMessage());
-                        }
-                        statusLabel.setText("Error.");
-                    } finally {
-                        saveButton.setEnabled(true);
-                    }
-                }
-            }.execute();
+            }
         });
+
 
         // ===== Back =====
         backButton.addActionListener(e -> {

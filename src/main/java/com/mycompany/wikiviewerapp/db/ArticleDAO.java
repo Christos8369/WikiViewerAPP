@@ -43,6 +43,23 @@ public class ArticleDAO {
     }
     
     
+            public java.util.Set<Integer> getAllSavedPageIds() throws java.sql.SQLException {
+
+            java.util.Set<Integer> ids = new java.util.HashSet<>();
+            String sql = "SELECT PAGEID FROM ARTICLE";
+
+            try (java.sql.Connection conn = java.sql.DriverManager.getConnection(URL);
+                 java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+                 java.sql.ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    ids.add(rs.getInt(1));
+                }
+            }
+
+            return ids;
+             }
+
     
         /*
         * checks if the article already exists in the DB ( by comparing the pageId )

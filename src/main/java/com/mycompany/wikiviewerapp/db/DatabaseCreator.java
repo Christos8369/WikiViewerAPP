@@ -114,7 +114,7 @@ public class DatabaseCreator {
             TITLE        VARCHAR(255) NOT NULL,
             SIZE         INTEGER,
             CATEGORY VARCHAR(255) DEFAULT 'Uncategorized' NOT NULL,
-            RATING INTEGER CHECK (RATING BETWEEN 0 AND 5),
+            RATING INTEGER CHECK (RATING BETWEEN 1 AND 5),
             SNIPPET      VARCHAR(255),
             TEXT         CLOB,
             WORD_COUNT   INTEGER
