@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Thu Feb 12 01:39:41 EET 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-019c-4f13-2879-00001f3fdba0 
+on database directory C:\Users\andri\Documents\NetBeansProjects\WikiViewerAPP\universityDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@11a4022a 
+Loaded from file:/C:/Users/andri/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
+java.vendor=Azul Systems, Inc.
+java.runtime.version=24.0.2+12
+user.dir=C:\Users\andri\Documents\NetBeansProjects\WikiViewerAPP
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

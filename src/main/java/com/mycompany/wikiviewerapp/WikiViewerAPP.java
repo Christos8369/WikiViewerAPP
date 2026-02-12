@@ -4,10 +4,38 @@
  */
 package com.mycompany.wikiviewerapp;
 
+import com.mycompany.wikiviewerapp.db.DatabaseCreator;
+import com.mycompany.wikiviewerapp.gui.gui_0;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 /**
  *
  * @author andri
  */
 public class WikiViewerAPP {
-    
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+        
+            // 1) Initialize DB (not on the Swing UI thread)
+        //for the actual run, it will happen like this
+        try {
+            DatabaseCreator.initializeDatabase();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Database initialization failed:\n" + ex.getMessage(),
+                    "WikiViewerAPP",
+                    JOptionPane.ERROR_MESSAGE);
+            return; // don't start the GUI if DB isn't ready
+        }
+
+        // 2) Start GUI on the EDT
+        SwingUtilities.invokeLater(() -> {
+            new gui_0().setVisible(true);
+        });
+
+        }
+
 }
+    
+

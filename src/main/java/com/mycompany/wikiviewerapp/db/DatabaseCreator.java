@@ -23,7 +23,12 @@ public class DatabaseCreator {
             "jdbc:derby:WikiViewerAPP_DB;create=true";
     
 
-
+    
+    /**
+     * Initializes the database by setting the Derby system home directory,
+     * loading the database driver, checking if the database already exists,
+     * and creating the required tables if necessary.
+     */
     public static void initializeDatabase() {
  // Set the system directory for storing the Derby database files.
         System.setProperty("derby.system.home", "C:/derby");
@@ -63,13 +68,14 @@ public class DatabaseCreator {
                 } 
 
     
-     /**
- * Checks if the Derby database exists by attempting to establish a connection.
- *
- * @return true if the database exists, false otherwise.
- */
+    
+        /**
+    * Checks if the Derby database exists by attempting to establish a connection.
+    *
+    * @return true if the database exists, false otherwise.
+    */
     private static boolean databaseExists() {
-        try (Connection conn = DriverManager.getConnection("jdbc:derby:universityDB")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:derby:WikiViewerAPP_DB")) {
          // If the connection is successful, the database exists.
         return true;
         } catch (SQLException e) {
@@ -77,6 +83,79 @@ public class DatabaseCreator {
         return false;
          }
     }
+    
+    
+        /**
+     * Creates the necessary tables in the database, including COUNTRY and UNIVERSITY.
+     *
+     * @param stmt The Statement object used to execute SQL queries.
+     * @throws SQLException if an error occurs during table creation.
+     * if need, we have to run an alter table SQL command if we want to change it
+     * after the first run of the application ( adding a column for example )
+     */
+         private static void createTables(Statement stmt) throws SQLException {
+        // SQL statement to create the COMMENT table, which holds bellow attribues.
+        String createCommentTable = """
+        CREATE TABLE COMMENT (
+            COMMENT_ID INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            ARTICLE_PAGE_ID INTEGER NOT NULL,
+            TEXT_OF_COMMENT VARCHAR(255) NOT NULL,
+            CONSTRAINT FK_COMMENT_ARTICLE
+                FOREIGN KEY (ARTICLE_PAGE_ID)
+                REFERENCES ARTICLE (PAGEID)
+        )
+        """;
+
+        
+         // SQL statement to create the ARTICLE table, which holds bellow attributes.
+        String createArticleTable = """
+        CREATE TABLE ARTICLE (
+            PAGEID       INTEGER PRIMARY KEY,
+            TITLE        VARCHAR(255) NOT NULL,
+            SIZE         INTEGER,
+            CATEGORY VARCHAR(255) DEFAULT 'Uncategorized' NOT NULL,
+            RATING INTEGER CHECK (RATING BETWEEN 0 AND 5),
+            SNIPPET      VARCHAR(255),
+            TEXT         CLOB,
+            WORD_COUNT   INTEGER
+        )
+        """;
+        stmt.executeUpdate(createArticleTable);
+        System.out.println("ARTICLE table created.");
+        
+        stmt.executeUpdate(createCommentTable);
+        System.out.println("COMMENT Table Created.");
+        }
+
+
+        /**
+        * Clears all rows from the two tables
+        * The method first deletes rows from the COMMENT table
+        * and then deletes rows from the COUNTRY table.
+        */
+            public static void clearAllRows() throws SQLException {
+                System.setProperty("derby.system.home", "C:/derby");
+
+                try {
+                    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+                } catch (ClassNotFoundException e) {
+                    throw new SQLException("Derby driver not found", e);
+                }
+
+                try (Connection conn = DriverManager.getConnection(DB_URL);
+                     Statement stmt = conn.createStatement()) {
+
+                    // child first, then parent
+                    stmt.executeUpdate("DELETE FROM COMMENT");
+                    stmt.executeUpdate("DELETE FROM ARTICLE");
+
+                    System.out.println("All rows deleted from COMMENT and ARTICLE.");
+                }
+            }
+
+    }
 
     
-}
+
+          
+

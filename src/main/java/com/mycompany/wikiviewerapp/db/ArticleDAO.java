@@ -1,0 +1,69 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.wikiviewerapp.db;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import javax.persistence.*;
+import java.util.*;
+import java.sql.*;
+import com.mycompany.wikiviewerapp.model.Article;
+
+/**
+ *
+ * @author andri
+ */
+public class ArticleDAO {
+    private static final String URL = "jdbc:derby:WikiViewerAPP_DB;create=true";
+
+    public void insertArticle(Article a) throws SQLException {
+
+        String sql = """
+            INSERT INTO ARTICLE
+            (PAGEID, TITLE, SIZE, SNIPPET, TEXT, WORD_COUNT)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, a.getPageId());
+            ps.setString(2, a.getTitle());
+            ps.setObject(3, a.getSize());         // nullable Integer
+            ps.setString(4, a.getSnippet());
+            ps.setString(5, a.getText());
+            ps.setObject(6, a.getWordCount());    // use setObject if wordCount can be null
+
+            ps.executeUpdate();
+        }
+    }
+    
+    
+    
+        /*
+        * checks if the article already exists in the DB ( by comparing the pageId )
+        * returnd true if it exists and false if not
+        * will be used in the insertArticle method
+        */
+        public boolean exists(int pageId) throws SQLException {
+            String sql = "SELECT 1 FROM ARTICLE WHERE PAGEID = ?";
+
+            try (Connection conn = DriverManager.getConnection(URL);
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, pageId);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next(); // true if at least one row found
+                }
+            }
+        }
+
+
+}
+
+
