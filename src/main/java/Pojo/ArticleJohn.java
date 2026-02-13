@@ -32,7 +32,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Article.findByRating", query = "SELECT a FROM Article a WHERE a.rating = :rating"),
     @NamedQuery(name = "Article.findBySnippet", query = "SELECT a FROM Article a WHERE a.snippet = :snippet"),
     @NamedQuery(name = "Article.findByWordCount", query = "SELECT a FROM Article a WHERE a.wordCount = :wordCount")})
-public class Article implements Serializable {
+public class ArticleJohn implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,16 +57,16 @@ public class Article implements Serializable {
     @Column(name = "WORD_COUNT")
     private Integer wordCount;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "articlePageId")
-    private Collection<Comment> commentCollection;
+    private Collection<CommentJohn> commentCollection;
 
-    public Article() {
+    public ArticleJohn() {
     }
 
-    public Article(Integer pageid) {
+    public ArticleJohn(Integer pageid) {
         this.pageid = pageid;
     }
 
-    public Article(Integer pageid, String title, String category) {
+    public ArticleJohn(Integer pageid, String title, String category) {
         this.pageid = pageid;
         this.title = title;
         this.category = category;
@@ -136,11 +136,11 @@ public class Article implements Serializable {
         this.wordCount = wordCount;
     }
 
-    public Collection<Comment> getCommentCollection() {
+    public Collection<CommentJohn> getCommentCollection() {
         return commentCollection;
     }
 
-    public void setCommentCollection(Collection<Comment> commentCollection) {
+    public void setCommentCollection(Collection<CommentJohn> commentCollection) {
         this.commentCollection = commentCollection;
     }
 
@@ -154,10 +154,10 @@ public class Article implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Article)) {
+        if (!(object instanceof ArticleJohn)) {
             return false;
         }
-        Article other = (Article) object;
+        ArticleJohn other = (ArticleJohn) object;
         if ((this.pageid == null && other.pageid != null) || (this.pageid != null && !this.pageid.equals(other.pageid))) {
             return false;
         }

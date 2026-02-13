@@ -27,7 +27,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Comment.findAll", query = "SELECT c FROM Comment c"),
     @NamedQuery(name = "Comment.findByCommentId", query = "SELECT c FROM Comment c WHERE c.commentId = :commentId"),
     @NamedQuery(name = "Comment.findByTextOfComment", query = "SELECT c FROM Comment c WHERE c.textOfComment = :textOfComment")})
-public class Comment implements Serializable {
+public class CommentJohn implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -40,16 +40,16 @@ public class Comment implements Serializable {
     private String textOfComment;
     @JoinColumn(name = "ARTICLE_PAGE_ID", referencedColumnName = "PAGEID")
     @ManyToOne(optional = false)
-    private Article articlePageId;
+    private ArticleJohn articlePageId;
 
-    public Comment() {
+    public CommentJohn() {
     }
 
-    public Comment(Integer commentId) {
+    public CommentJohn(Integer commentId) {
         this.commentId = commentId;
     }
 
-    public Comment(Integer commentId, String textOfComment) {
+    public CommentJohn(Integer commentId, String textOfComment) {
         this.commentId = commentId;
         this.textOfComment = textOfComment;
     }
@@ -70,11 +70,11 @@ public class Comment implements Serializable {
         this.textOfComment = textOfComment;
     }
 
-    public Article getArticlePageId() {
+    public ArticleJohn getArticlePageId() {
         return articlePageId;
     }
 
-    public void setArticlePageId(Article articlePageId) {
+    public void setArticlePageId(ArticleJohn articlePageId) {
         this.articlePageId = articlePageId;
     }
 
@@ -88,10 +88,10 @@ public class Comment implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Comment)) {
+        if (!(object instanceof CommentJohn)) {
             return false;
         }
-        Comment other = (Comment) object;
+        CommentJohn other = (CommentJohn) object;
         if ((this.commentId == null && other.commentId != null) || (this.commentId != null && !this.commentId.equals(other.commentId))) {
             return false;
         }
