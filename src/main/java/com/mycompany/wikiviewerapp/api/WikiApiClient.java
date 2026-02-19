@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.wikiviewerapp.api;
 
 import com.google.gson.JsonArray;
@@ -10,7 +6,6 @@ import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -49,8 +44,11 @@ public class WikiApiClient {
             String json = response.body().string();
 
             JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+            System.out.println("Αυτό είναι το root\n"+root.toString());
             JsonObject query = root.getAsJsonObject("query");
+            System.out.println("Αυτό είναι το queryt\n"+query.toString());
             JsonArray searchArr = query.getAsJsonArray("search");
+            System.out.println("Αυτό είναι το searchArr\n"+searchArr.toString());
 
             List<WikiSearchResult> out = new ArrayList<>();
             
@@ -65,9 +63,7 @@ public class WikiApiClient {
                 int wordCount = item.has("wordcount") ? item.get("wordcount").getAsInt() : 0;
 
                 out.add(new WikiSearchResult(pageId, title, snippet, size, wordCount));
-            }
-
-            
+            }            
             return out;
         }
     }
@@ -98,7 +94,6 @@ public class WikiApiClient {
         return pageObj.has("extract") ? pageObj.get("extract").getAsString() : "";
     }
 }
-    //ArticleDao articleDao = new ArticleDao();
 
     
 

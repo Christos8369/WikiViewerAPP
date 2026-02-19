@@ -10,7 +10,6 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import com.mycompany.wikiviewerapp.db.ArticleDAO;
-import com.mycompany.wikiviewerapp.model.Article;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -57,11 +56,88 @@ public class Jgui1_1 extends javax.swing.JFrame {
         Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
+
+    private void fetchPage(String keyword, DefaultListModel listModel) {
+
+        jButton5.setEnabled(false);
+        jButton6.setEnabled(false);
+        jButton2.setEnabled(false);
+        jLabel1.setText("Searching Wikipedia...");
+
+        new SwingWorker<List<WikiSearchResult>, Void>() {
+            private Exception error;
+
+            @Override
+            protected List<WikiSearchResult> doInBackground() {
+                try {
+                    return api.search(keyword, PAGE_SIZE, offset);
+                } catch (Exception ex) {
+                    error = ex;
+                    return java.util.Collections.emptyList();
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (error != null) {
+                        throw error;
+                    }
+
+                    List<WikiSearchResult> results = get();
+                    
+                    savedPageIds.clear();
+                    try {
+                        ArticleDAO dao = new ArticleDAO();
+                        savedPageIds.addAll(dao.getAllSavedPageIds());
+                    } catch (Exception dbEx) {
+                        dbEx.printStackTrace();
+                    }
+
+                    // Populate list
+                    listModel.clear();
+                    for (WikiSearchResult r : results) {
+                        listModel.addElement(r);
+                    }
+                    jList1.repaint();
+
+                    int from = results.isEmpty() ? 0 : offset + 1;
+                    int to = offset + results.size();
+                    jLabel1.setText("Showing results " + from + " - " + to);
+
+                    // Buttons state
+                    jButton5.setEnabled(offset > 0);
+
+                    // Αν γύρισαν λιγότερα από PAGE_SIZE δεν υπάρχουν άλλες σελίδες
+                    jButton6.setEnabled(results.size() == PAGE_SIZE);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    jLabel1.setText("Error.");
+                    JOptionPane.showMessageDialog(Jgui1_1.this,
+                            "API error: " + ex.getMessage());
+
+                    // σε error, μην αφήνεις offset “χαλασμένο”
+                    // (π.χ. αν πάτησαν Next και έσκασε)
+                    offset = Math.max(0, offset);
+
+                    jButton5.setEnabled(offset > 0);
+                    jButton6.setEnabled(true);
+                } finally {
+                    jButton2.setEnabled(true);
+                }
+            }
+        }.execute();
+    }
     //Επειδή χρειάζομαι αυτή η φόρμα να ανοίγει και μετά να γίνεται dispose χωρίς να χάνω την Gui_0 βάζω εδώ μια δήλωση από την Gui_0
     private final Jgui_0 mainForm;
 
+    private final WikiApiClient api = new WikiApiClient();
     //Variable για να κάνω το pagination. Το κάνω αρχική τιμή 20 γιατί το κουμπί search μου δίνει τα πρώτα 20
-    private int nextPages =20;
+    private int nextPages = 20;
+
+    private static final int PAGE_SIZE = 20;
+    private int offset = 0;
 
     /**
      * Creates new form Jgui1_1
@@ -96,18 +172,19 @@ public class Jgui1_1 extends javax.swing.JFrame {
         jTextField1.setPreferredSize(new Dimension(150, 26));
 
         //Φτιάχνω το instance για τα αποτελέσματα
-        WikiApiClient api = new WikiApiClient();
+        // WikiApiClient api = new WikiApiClient();
         DefaultListModel listModel = new DefaultListModel();
         jList1.setModel(listModel);
         jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        //Φτιάχνω τα events για τα mouse click
-        jButton1.addActionListener(e -> {
+        // = = = = Φτιάχνω τα events για τα mouse click = = = =
+        //Είναι το κουμπί Back και επιστρέδω στην κεντρική οθόνη.
+        jButton1.addActionListener(e -> {  //Είναι το κουμπί Back
             //Κάνω Dispose αυτήν που βρίσκομαι και εμφανίζω την προηγούμενη που είχα κρύψει
             this.dispose();
             mainForm.setVisible(true);
         });
-
+        //Είναι το κουμπί Search
         jButton2.addActionListener(e -> {
             final String keyword = jTextField1.getText().trim();
             if (keyword.isEmpty()) {
@@ -115,63 +192,27 @@ public class Jgui1_1 extends javax.swing.JFrame {
                 return;
             }
 
-            jButton2.setEnabled(false);
-            jLabel1.setText("Searching Wikipedia...");
-
-            new SwingWorker<List<WikiSearchResult>, Void>() {
-                private Exception error;
-
-                @Override
-                protected List<WikiSearchResult> doInBackground() {
-                    try {
-                        return api.search(keyword, 20, 0);
-                    } catch (Exception ex) {
-                        error = ex;
-                        return java.util.Collections.emptyList();
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        if (error != null) {
-                            throw error;
-                        }
-
-                        List<WikiSearchResult> results = get();
-
-                        // ✅ Load saved ids from DB so the renderer can show ✅
-                        savedPageIds.clear();
-                        try {
-                            ArticleDAO dao = new ArticleDAO();
-                            savedPageIds.addAll(dao.getAllSavedPageIds());
-                        } catch (Exception dbEx) {
-                            dbEx.printStackTrace(); // if DB check fails, list still shows normally
-                        }
-
-                        // Populate list
-                        listModel.clear();
-                        for (WikiSearchResult r : results) {
-                            listModel.addElement(r);
-                        }
-
-                        // ✅ Refresh list display (forces renderer re-run)
-                        jList1.repaint();
-
-                        jLabel1.setText("Showing results " + 1 + " - " + 20);
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        jLabel1.setText("Error.");
-                        JOptionPane.showMessageDialog(Jgui1_1.this,
-                                "API error: " + ex.getMessage());
-                    } finally {
-                        jButton2.setEnabled(true);
-                    }
-                }
-            }.execute();
+            offset = 0;                 // reset στην πρώτη σελίδα
+            fetchPage(keyword, listModel);
+        });
+        //Είναι το κουμπί Read full Article
+        jButton3.addActionListener(e -> {
+            
+            
         });
 
+        //Είναι το κουμπί που φέρνει τα προηγούμενα αποτελέσματα
+        jButton5.addActionListener(e -> {
+            final String keyword = jTextField1.getText().trim();
+            if (keyword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Type a keyword first.");
+                return;
+            }
+
+            offset = Math.max(0, offset - PAGE_SIZE);
+            fetchPage(keyword, listModel);
+        });
+        //Είναι το κουμπί Next που φέρνει τα επόμενα αποτελέσματα
         jButton6.addActionListener(e -> {
             final String keyword = jTextField1.getText().trim();
             if (keyword.isEmpty()) {
@@ -179,52 +220,8 @@ public class Jgui1_1 extends javax.swing.JFrame {
                 return;
             }
 
-            final int offsetToFetch = nextPages; // Κρατώ τον αριθμό της σελίδας
-            nextPages += 20;                                 // Ετοιμάζω την επόμενη σελίδα
-
-            jButton6.setEnabled(false);
-            jLabel1.setText("Searching Wikipedia...");
-
-            new SwingWorker<List<WikiSearchResult>, Void>() {
-                private Exception error;
-
-                @Override
-                protected List<WikiSearchResult> doInBackground() {
-                    try {
-                        return api.search(keyword, 20, offsetToFetch);
-                    } catch (Exception ex) {
-                        error = ex;
-                        return java.util.Collections.emptyList();
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        if (error != null) {
-                            throw error;
-                        }
-
-                        List<WikiSearchResult> results = get();
-
-                        listModel.clear();
-                        for (WikiSearchResult r : results) {
-                            listModel.addElement(r);
-                        }
-
-                        jLabel1.setText("Showing results " + (offsetToFetch + 1) + " - " + (offsetToFetch + results.size()));
-
-                    } catch (Exception ex) {
-                        // αν αποτύχει, γύρνα πίσω το offset για να μη “χάσεις” σελίδα
-                        nextPages = Math.max(0, nextPages - 20);
-
-                        jLabel1.setText("Error.");
-                        JOptionPane.showMessageDialog(Jgui1_1.this, "API error: " + ex.getMessage());
-                    } finally {
-                        jButton6.setEnabled(true);
-                    }
-                }
-            }.execute();
+            offset += PAGE_SIZE;
+            fetchPage(keyword, listModel);
         });
     }
 
@@ -255,9 +252,9 @@ public class Jgui1_1 extends javax.swing.JFrame {
 
         jButton4.setText("jButton4");
 
-        jButton5.setText("jButton5");
+        jButton5.setLabel("Previous");
 
-        jButton6.setText("jButton6");
+        jButton6.setLabel("Next");
 
         jTextField1.setText("jTextField1");
         jTextField1.setMinimumSize(new java.awt.Dimension(75, 23));
@@ -267,13 +264,14 @@ public class Jgui1_1 extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jList1);
 
         jLabel1.setText("jLabel1");
 
         jLabel2.setText("jLabel2");
 
-        jButton1.setText("jButton1");
+        jButton1.setLabel("Back");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -298,7 +296,7 @@ public class Jgui1_1 extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
                                 .addComponent(jButton4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton3))

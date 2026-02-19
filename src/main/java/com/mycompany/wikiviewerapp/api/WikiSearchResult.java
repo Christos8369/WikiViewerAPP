@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.wikiviewerapp.api;
 
 /**
@@ -17,7 +13,7 @@ public class WikiSearchResult {
     private final int wordCount;
 
     public WikiSearchResult(int pageId, String title, String snippet,
-                            int size, int wordCount) {
+            int size, int wordCount) {
         this.pageId = pageId;
         this.title = title;
         this.snippet = snippet;
@@ -25,14 +21,32 @@ public class WikiSearchResult {
         this.wordCount = wordCount;
     }
 
-    public int getPageId() { return pageId; }
-    public String getTitle() { return title; }
-    public String getSnippet() { return snippet; }
-    public int getSize() { return size; }
-    public int getWordCount() { return wordCount; }
+    public int getPageId() {
+        return pageId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public int getWordCount() {
+        return wordCount;
+    }
 
     @Override
     public String toString() {
-        return title;
+        return "<html>"
+               +"<i><u>Κωδικός άρθρου: </u></i>  " + pageId + "<br>"
+                +"<i><u>Τίτλος: </u></i>"+ title + "<br>"
+                + "<i><u>Περίληψη: </u></i>"+snippet
+                + "</html>";
     }
 }

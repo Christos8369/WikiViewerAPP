@@ -5,16 +5,13 @@
 package Pojo;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -32,7 +29,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Article.findByRating", query = "SELECT a FROM Article a WHERE a.rating = :rating"),
     @NamedQuery(name = "Article.findBySnippet", query = "SELECT a FROM Article a WHERE a.snippet = :snippet"),
     @NamedQuery(name = "Article.findByWordCount", query = "SELECT a FROM Article a WHERE a.wordCount = :wordCount")})
-public class ArticleJohn implements Serializable {
+public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,17 +53,15 @@ public class ArticleJohn implements Serializable {
     private String text;
     @Column(name = "WORD_COUNT")
     private Integer wordCount;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "articlePageId")
-    private Collection<CommentJohn> commentCollection;
 
-    public ArticleJohn() {
+    public Article() {
     }
 
-    public ArticleJohn(Integer pageid) {
+    public Article(Integer pageid) {
         this.pageid = pageid;
     }
 
-    public ArticleJohn(Integer pageid, String title, String category) {
+    public Article(Integer pageid, String title, String category) {
         this.pageid = pageid;
         this.title = title;
         this.category = category;
@@ -136,14 +131,6 @@ public class ArticleJohn implements Serializable {
         this.wordCount = wordCount;
     }
 
-    public Collection<CommentJohn> getCommentCollection() {
-        return commentCollection;
-    }
-
-    public void setCommentCollection(Collection<CommentJohn> commentCollection) {
-        this.commentCollection = commentCollection;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -154,10 +141,10 @@ public class ArticleJohn implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ArticleJohn)) {
+        if (!(object instanceof Article)) {
             return false;
         }
-        ArticleJohn other = (ArticleJohn) object;
+        Article other = (Article) object;
         if ((this.pageid == null && other.pageid != null) || (this.pageid != null && !this.pageid.equals(other.pageid))) {
             return false;
         }
