@@ -38,6 +38,9 @@ public class Jgui1_1 extends javax.swing.JFrame {
     //private JList<WikiSearchResult> resultsList;
     private final java.util.Set<Integer> savedPageIds = new java.util.HashSet<>();
 
+    //
+    private List<WikiSearchResult> currentResults = java.util.Collections.emptyList();
+
     // helper inside GUI class
     private static String shortSnippet(String s) {
         s = WikiApiClient.stripHtml(s);
@@ -85,7 +88,7 @@ public class Jgui1_1 extends javax.swing.JFrame {
                     }
 
                     List<WikiSearchResult> results = get();
-                    
+
                     savedPageIds.clear();
                     try {
                         ArticleDAO dao = new ArticleDAO();
@@ -94,10 +97,11 @@ public class Jgui1_1 extends javax.swing.JFrame {
                         dbEx.printStackTrace();
                     }
 
-                    // Populate list
+                    currentResults = get();
+
                     listModel.clear();
-                    for (WikiSearchResult r : results) {
-                        listModel.addElement(r);
+                    for (WikiSearchResult r : currentResults) {
+                        listModel.addElement(r.toString()); // HTML string
                     }
                     jList1.repaint();
 
@@ -133,8 +137,6 @@ public class Jgui1_1 extends javax.swing.JFrame {
     private final Jgui_0 mainForm;
 
     private final WikiApiClient api = new WikiApiClient();
-    //Variable για να κάνω το pagination. Το κάνω αρχική τιμή 20 γιατί το κουμπί search μου δίνει τα πρώτα 20
-    private int nextPages = 20;
 
     private static final int PAGE_SIZE = 20;
     private int offset = 0;
@@ -170,6 +172,9 @@ public class Jgui1_1 extends javax.swing.JFrame {
 
         jTextField1.setText(null);
         jTextField1.setPreferredSize(new Dimension(150, 26));
+        
+        jLabel1.setText(null);
+        jLabel2.setText(null);
 
         //Φτιάχνω το instance για τα αποτελέσματα
         // WikiApiClient api = new WikiApiClient();
@@ -197,8 +202,36 @@ public class Jgui1_1 extends javax.swing.JFrame {
         });
         //Είναι το κουμπί Read full Article
         jButton3.addActionListener(e -> {
-            
-            
+
+            int index = jList1.getSelectedIndex();
+            if (index < 0) {
+                JOptionPane.showMessageDialog(this, "Διάλεξε ένα αποτέλεσμα πρώτα.");
+                return;
+            }
+
+            int pageId = currentResults.get(index).getPageId();
+
+            try {
+                WikiApiClient fetch = new WikiApiClient();
+                String article = fetch.fetchFullText(pageId);
+
+                JTextPane textPane = new JTextPane();
+                textPane.setText(article);
+                textPane.setEditable(false);
+                textPane.setCaretPosition(0);
+
+                JScrollPane scrollPane = new JScrollPane(textPane);
+
+                JDialog dialog = new JDialog(this, "Άρθρο Αριθμός: " + pageId + " Wikipedia", true);
+                dialog.add(scrollPane);
+                dialog.setSize(1200, 1000);
+                dialog.setLocationRelativeTo(this);
+                dialog.setVisible(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Σφάλμα φόρτωσης άρθρου.");
+            }
         });
 
         //Είναι το κουμπί που φέρνει τα προηγούμενα αποτελέσματα
@@ -219,7 +252,6 @@ public class Jgui1_1 extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Type a keyword first.");
                 return;
             }
-
             offset += PAGE_SIZE;
             fetchPage(keyword, listModel);
         });

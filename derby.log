@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Thu Feb 19 21:59:55 EET 2026:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-019c-777c-d3be-00001d8f6478 
+Fri Feb 20 22:03:49 EET 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-019c-7ca6-c204-00001d8f8378 
 on database directory G:\WikiViewerAPP\WikiViewerAPP\WikiViewerAPP_DB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@11a4022a 
 Loaded from file:/C:/Users/ioann/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
 java.vendor=Azul Systems, Inc.
