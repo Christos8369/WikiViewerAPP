@@ -1,3 +1,9 @@
+/**
+ *
+ * @author Andriopoulos Xristos
+ * @author Karagiannis Ioannis
+ * @author Demisarlis Thomas
+ */
 package model;
 
 import java.io.Serializable;

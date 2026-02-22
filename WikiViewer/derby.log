@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Sun Feb 22 18:56:13 EET 2026:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-8647-b829-00001f5e54f0 
-on database directory C:\Users\ioann\Desktop\WikiViewer\wikiDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@55f96302 
-Loaded from file:/C:/Users/ioann/Desktop/WikiViewer/libraries/derby.jar
+Sun Feb 22 19:40:24 EET 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-8670-2d44-00001f5e4920 
+on database directory G:\WikiViewerAPP\WikiViewer\wikiDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@55f96302 
+Loaded from file:/G:/WikiViewerAPP/WikiViewer/libraries/derby.jar
 java.vendor=Eclipse Adoptium
 java.runtime.version=25.0.2+10-LTS
-user.dir=C:\Users\ioann\Desktop\WikiViewer
+user.dir=G:\WikiViewerAPP\WikiViewer
 os.name=Windows 11
 os.arch=amd64
 os.version=10.0

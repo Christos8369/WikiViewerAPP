@@ -1,3 +1,9 @@
+/**
+ *
+ * @author Andriopoulos Xristos
+ * @author Karagiannis Ioannis
+ * @author Demisarlis Thomas
+ */
 package view;
 
 import com.itextpdf.text.Document;
