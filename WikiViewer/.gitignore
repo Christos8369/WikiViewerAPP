@@ -1,0 +1,13 @@
+# NetBeans local stuff
+nbproject/private/
+
+# Build folders
+/build/
+/dist/
+
+# Compiled files
+*.class
+
+# NetBeans temp
+**/.netbeans_automatic_build
+**/.netbeans_update_resources
