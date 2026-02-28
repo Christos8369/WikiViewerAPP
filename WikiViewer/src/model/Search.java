@@ -25,7 +25,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Search.findBySearchid", query = "SELECT s FROM Search s WHERE s.searchid = :searchid"),
     @NamedQuery(name = "Search.findBySearchstring", query = "SELECT s FROM Search s WHERE s.searchstring = :searchstring"),
     @NamedQuery(name = "Search.findByNumberofsearches", query = "SELECT s FROM Search s WHERE s.numberofsearches = :numberofsearches"),
-    @NamedQuery(name = "Search.Delete", query = "DELETE FROM Search")})
+    @NamedQuery(name = "Search.Delete", query = "DELETE FROM Search")}) //Φτιάξαμε αυτό το query ώστε κάποιος να μπορεί να μηδενίσει τα statistics search
 public class Search implements Serializable {
 
     private static final long serialVersionUID = 1L;
