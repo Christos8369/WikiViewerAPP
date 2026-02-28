@@ -371,7 +371,6 @@ public class StatisticsForm extends javax.swing.JFrame {
         DatabaseUse.clearStatistics();
         getSearchesData();
         getCategoriesData();}
-        else return;
     }//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
