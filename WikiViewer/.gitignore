@@ -15,3 +15,13 @@ wikiDB/
 
 # Class files
 *.class
+
+# Java
+*.class
+/build/
+
+# Database
+*.lck
+*.dat
+*.ctrl
+wikiDB/
