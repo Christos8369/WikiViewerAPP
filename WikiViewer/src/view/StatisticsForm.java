@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -122,96 +123,115 @@ public class StatisticsForm extends javax.swing.JFrame {
 
     //Δημιουργεί το αρχείο pdf με τα στατιστικά
     public void createPDF() {
+        OutputStream outputStream = null;
+        Document document = null;
+
         try {
-            //Δημιουργία αντικειμένων Document, OutputStream και PdfWriter
-            Document document = new Document();
-            OutputStream outputStream = new FileOutputStream(new File("Statistics.pdf"));
+            // 1) Ζήτα από τον χρήστη πού να αποθηκευτεί
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Αποθήκευση PDF");
+            fileChooser.setSelectedFile(new File("Statistics.pdf"));
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF files", "pdf"));
+
+            int userSelection = fileChooser.showSaveDialog(this);
+            if (userSelection != JFileChooser.APPROVE_OPTION) {
+                return; // ο χρήστης πάτησε Cancel
+            }
+
+            File pdfFile = fileChooser.getSelectedFile();
+
+            // 2) Εξασφάλισε κατάληξη .pdf
+            if (!pdfFile.getName().toLowerCase().endsWith(".pdf")) {
+                pdfFile = new File(pdfFile.getAbsolutePath() + ".pdf");
+            }
+
+            // (προαιρετικό) Αν υπάρχει ήδη, ρώτα αν θέλει overwrite
+            if (pdfFile.exists()) {
+                int overwrite = JOptionPane.showConfirmDialog(
+                        this,
+                        "Το αρχείο υπάρχει ήδη:\n" + pdfFile.getAbsolutePath() + "\n\nΘέλετε αντικατάσταση;",
+                        "Επιβεβαίωση αντικατάστασης",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+                if (overwrite != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+
+            // 3) Δημιουργία Document / Writer
+            document = new Document();
+            outputStream = new FileOutputStream(pdfFile);
             PdfWriter.getInstance(document, outputStream);
 
-            //Άνοιγμα του εγγράφου
+            // Άνοιγμα εγγράφου
             document.open();
 
-            //Καταχώριση της συμβολοσειράς Arial για σωστή εμφάνιση Ελληνικών χαρακτήρων
-            //Χρησιμοποιείται το αρχείο συμβολοσειράς arial.ttf που βρίσκεται στο φάκελο του project
+            // Γραμματοσειρά για Ελληνικά
             FontFactory.register("arial.ttf", "Arial");
-
-            //Ορισμός ως γραμματοσειράς της Arial με ελληνική κωδικοσελίδα 1253
             Font font = FontFactory.getFont("Arial", "Cp1253", true);
 
-            //Δημιουργία παραγράφου για τον τίτλο του πίνακα
+            // Τίτλος 1
             Paragraph par = new Paragraph("Αποθηκευμένα άρθρα ανά κατηγορία:", font);
-
-            //Κεντράρισμα και προσθήκη της παραγράφου
             par.setAlignment(Element.ALIGN_CENTER);
             document.add(par);
-
-            //Αλλαγή γραμμής
             document.add(new Paragraph("\n"));
 
-            //Δημιουργία πίνακα με δύο στήλες
+            // Πίνακας 1
             PdfPTable table = new PdfPTable(2);
-
-            //Προσθήκη τίτλων των δύο στηλών
             table.addCell(new Paragraph("Κατηγορία", font));
             table.addCell(new Paragraph("Αποθηκευμένα άρθρα", font));
 
-            //Προσθήκη όλων των στατιστικών στοιχείων αποθηκευμένων άρθρων ανά κατηγορία στον πίνακα
             for (Object[] categoryStatistic : categoryStatistics) {
                 table.addCell(new Paragraph(String.valueOf(categoryStatistic[0]), font));
                 table.addCell(new Paragraph(String.valueOf(categoryStatistic[1]), font));
             }
-
-            //Προσθήκη του πρώτου πίνακα στο pdf
             document.add(table);
 
-            //Αλλαγή γραμμής
             document.add(new Paragraph("\n\n"));
 
-            //Δημιουργία παραγράφου για τον τίτλο του πίνακα
+            // Τίτλος 2
             par = new Paragraph("Στατιστικά αναζητήσεων:", font);
-
-            //Κεντράρισμα και προσθήκη της παραγράφου
             par.setAlignment(Element.ALIGN_CENTER);
             document.add(par);
-
-            //Αλλαγή γραμμής
             document.add(new Paragraph("\n"));
 
-            //Δημιουργία πίνακα με δύο στήλες
+            // Πίνακας 2
             table = new PdfPTable(2);
-
-            //Προσθήκη τίτλων των δύο στηλών
             table.addCell(new Paragraph("Λέξη-κλειδί", font));
             table.addCell(new Paragraph("Πλήθος αναζητήσεων", font));
 
-            //Προσθήκη όλων των στατιστικών στοιχείων αναζητήσεων στον πίνακα
             for (Search search : searches) {
                 table.addCell(new Paragraph(search.getSearchstring(), font));
                 table.addCell(new Paragraph(String.valueOf(search.getNumberofsearches()), font));
             }
-
-            //Προσθήκη του δεύτερου πίνακα στο pdf
             document.add(table);
 
-            //Κλείσιμο του εγγράφου και του outputStream
+            // Κλείσιμο
             document.close();
-            outputStream.close();
+            document = null;
 
-            //Εμφάνιση μηνύματος για την δημιουργία αρχείου pdf
+            outputStream.close();
+            outputStream = null;
+
             JOptionPane.showMessageDialog(
                     this,
-                    "Δημιουργήθηκε το αρχείο Statistics.pdf",
+                    "Δημιουργήθηκε το αρχείο:\n" + pdfFile.getAbsolutePath(),
                     "Επιτυχία αποθήκευσης αρχείου",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
         } catch (Exception e) {
-            //Αν συμβεί εξαίρεση κατά την δημιουργία του αρχείου εμφανίζουμε κατάλληλο μήνυμα
             JOptionPane.showMessageDialog(
                     this,
-                    "Πρόβλημα στην δημιουργία του αρχείου Statistics.pdf",
+                    "Πρόβλημα στην δημιουργία του αρχείου Statistics.pdf\n" + e.getMessage(),
                     "Αποτυχία αποθήκευσης αρχείου",
                     JOptionPane.ERROR_MESSAGE
             );
+        } finally {
+            // safety close σε περίπτωση που σκάσει πριν το close
+            try { if (document != null && document.isOpen()) document.close(); } catch (Exception ignored) {}
+            try { if (outputStream != null) outputStream.close(); } catch (Exception ignored) {}
         }
     }
 

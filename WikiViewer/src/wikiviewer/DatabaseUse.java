@@ -14,7 +14,10 @@ import model.Category;
 import model.Search;
 import java.util.List;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;;
+import javax.persistence.Query;
+import javax.swing.JOptionPane;
+
+import java.util.Date;;
 
 //Κλάση για την διαχείριση της βάσης δεδομένων
 public class DatabaseUse {
@@ -137,4 +140,20 @@ public class DatabaseUse {
         }
         em.getTransaction().commit();
     }
+    
+        // Διαγράφει ένα άρθρο από τη βάση με βάση το pageid
+    // Επιστρέφει true αν διαγράφηκε, false αν δεν βρέθηκε
+    public static boolean deleteArticleByPageid(int pageid) {
+        Article article = getArticle(pageid);  // χρησιμοποιεί το NamedQuery Article.findByPageid
+
+        if (article == null) {
+            return false;
+        }
+
+        em.getTransaction().begin();
+        em.remove(article);          // article είναι managed γιατί ήρθε από query
+        em.getTransaction().commit();
+
+        return true;
+}
 }
