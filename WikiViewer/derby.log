@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Sat Feb 28 18:43:11 EET 2026:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-a521-f0f1-00001f5e54f0 
+Sat Feb 28 19:13:13 EET 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-a53d-72d4-00001f5e1520 
 on database directory G:\Ergasia3plh24\test3\WikiViewer\wikiDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@55f96302 
 Loaded from file:/G:/Ergasia3plh24/test3/WikiViewer/libraries/derby.jar
 java.vendor=Eclipse Adoptium
