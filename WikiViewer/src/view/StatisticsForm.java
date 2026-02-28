@@ -363,8 +363,8 @@ public class StatisticsForm extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
                 this,
-                "Είστε σίγουροι ότι θέλετε μηδενίσετε τους μετρητές ανζήτησης;",
-                "Επιβεβαίωση Μεδενισμού",
+                "Είστε σίγουροι ότι θέλετε μηδενίσετε τους μετρητές αναζήτησης;",
+                "Επιβεβαίωση Μηδενισμού",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
         if (confirm == JOptionPane.YES_OPTION){
