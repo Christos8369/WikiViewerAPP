@@ -38,7 +38,7 @@ public class StoredArticlesForm extends JFrame {
 
     //Το μοντέλο της λίστας
     private final DefaultListModel<String> listModel;
-    
+
     //Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για κάθε εικονίδιο
     private ImageIcon scaledIcon(String path, int w, int h) {
         Image img = new ImageIcon(MainForm.class.getResource(path)).getImage();
@@ -63,6 +63,8 @@ public class StoredArticlesForm extends JFrame {
         jButton2.setIcon(scaledIcon("/resources/eye.png", 16, 16));
         jButton3.setText("Επιστροφή");
         jButton3.setIcon(scaledIcon("/resources/arrow-left.png", 16, 16));
+        jButton4.setText("Διαγραφή άρθρου");
+        jButton4.setIcon(scaledIcon("/resources/trash.png", 16, 16));
 
         //Εισαγωγή κατηγοριών στο combo box
         jComboBox1.removeAllItems();
@@ -255,7 +257,7 @@ public class StoredArticlesForm extends JFrame {
 
         jLabel2.setText("jLabel2");
 
-        jButton4.setText("διαγραφή άρθρου");
+        jButton4.setText("jButton4");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -330,37 +332,39 @@ public class StoredArticlesForm extends JFrame {
         WikiViewer.mainForm.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    //Διαγραφή άρθρου από την βάση
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-int indexSelected = jList1.getSelectedIndex();
+        int indexSelected = jList1.getSelectedIndex();
 
-    if (indexSelected == -1) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Δεν έχετε επιλέξει άρθρο",
-                "Διαγραφή άρθρου",
-                JOptionPane.INFORMATION_MESSAGE);
-        return;
-    }
+        
+        if (indexSelected == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Δεν έχετε επιλέξει άρθρο",
+                    "Διαγραφή άρθρου",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
-    // ✅ This line was missing
-    Article articleToDelete = articles.get(indexSelected);
+        // ✅ This line was missing
+        Article articleToDelete = articles.get(indexSelected);
 
-    boolean deleted = DatabaseUse.deleteArticleByPageid(articleToDelete.getPageid());
+        boolean deleted = DatabaseUse.deleteArticleByPageid(articleToDelete.getPageid());
 
-    if (deleted) {
-        updateArticles();   // refresh list
-        JOptionPane.showMessageDialog(
-                this,
-                "Το άρθρο διαγράφηκε.",
-                "Διαγραφή άρθρου",
-                JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(
-                this,
-                "Το άρθρο δεν βρέθηκε.",
-                "Διαγραφή άρθρου",
-                JOptionPane.WARNING_MESSAGE);
-    }
+        if (deleted) {
+            updateArticles();   // refresh list
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Το άρθρο διαγράφηκε.",
+                    "Διαγραφή άρθρου",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Το άρθρο δεν βρέθηκε.",
+                    "Διαγραφή άρθρου",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

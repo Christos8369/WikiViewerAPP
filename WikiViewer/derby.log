@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Sat Feb 28 06:19:09 EET 2026:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-a278-c208-00001f1e4138 
-on database directory C:\Users\andri\Documents\NetBeansProjects\WikiViewerAPP\WikiViewer\wikiDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@55f96302 
-Loaded from file:/C:/Users/andri/Documents/NetBeansProjects/WikiViewerAPP/WikiViewer/libraries/derby.jar
-java.vendor=Oracle Corporation
-java.runtime.version=25+37-LTS-3491
-user.dir=C:\Users\andri\Documents\NetBeansProjects\WikiViewerAPP\WikiViewer
+Sat Feb 28 18:25:42 EET 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-019c-a511-f007-00001f5e1520 
+on database directory G:\Ergasia3plh24\test3\WikiViewer\wikiDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@55f96302 
+Loaded from file:/G:/Ergasia3plh24/test3/WikiViewer/libraries/derby.jar
+java.vendor=Eclipse Adoptium
+java.runtime.version=25.0.2+10-LTS
+user.dir=G:\Ergasia3plh24\test3\WikiViewer
 os.name=Windows 11
 os.arch=amd64
 os.version=10.0
