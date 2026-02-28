@@ -18,14 +18,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 //POJO κλάση για τον πίνακα Search
-
 @Entity
 @Table(name = "SEARCH")
 @NamedQueries({
     @NamedQuery(name = "Search.findAll", query = "SELECT s FROM Search s"),
     @NamedQuery(name = "Search.findBySearchid", query = "SELECT s FROM Search s WHERE s.searchid = :searchid"),
     @NamedQuery(name = "Search.findBySearchstring", query = "SELECT s FROM Search s WHERE s.searchstring = :searchstring"),
-    @NamedQuery(name = "Search.findByNumberofsearches", query = "SELECT s FROM Search s WHERE s.numberofsearches = :numberofsearches")})
+    @NamedQuery(name = "Search.findByNumberofsearches", query = "SELECT s FROM Search s WHERE s.numberofsearches = :numberofsearches"),
+    @NamedQuery(name = "Search.Delete", query = "DELETE FROM Search")})
 public class Search implements Serializable {
 
     private static final long serialVersionUID = 1L;

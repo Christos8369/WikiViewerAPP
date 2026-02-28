@@ -56,12 +56,14 @@ public class StatisticsForm extends javax.swing.JFrame {
         Image pageIcon = new ImageIcon(MainForm.class.getResource("/resources/wikilogo.png")).getImage();
         setIconImage(pageIcon);
         jLabel1.setText("Αποθηκευμένα άρθρα ανά κατηγορία:");
-        jLabel2.setText("Στατιστικα αναζητήσεων:");
+        jLabel2.setText("Στατιστικά αναζητήσεων:");
         
         jButton1.setText("Δημιουργία PDF");
         jButton1.setIcon(scaledIcon("/resources/file-pdf.png", 16, 16));
         jButton2.setText("Επιστροφή");
         jButton2.setIcon(scaledIcon("/resources/arrow-left.png", 16, 16));
+        jButton3.setText("Καθαρισμός στατιστικών αναζητήσεων");
+        jButton3.setIcon(scaledIcon("/resources/sweep.png", 16, 16));
 
         //Δημιουργία μοντέλου για τον πίνακα με τα στατιστικά κατηγοριών
         categoriesTableModel = new DefaultTableModel() {
@@ -250,6 +252,7 @@ public class StatisticsForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -298,6 +301,13 @@ public class StatisticsForm extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setText("jButton3");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -307,6 +317,8 @@ public class StatisticsForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
@@ -329,7 +341,8 @@ public class StatisticsForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -346,10 +359,25 @@ public class StatisticsForm extends javax.swing.JFrame {
         WikiViewer.mainForm.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+    //Καθαρισμός ΜΟΝΟ των αναζητήσεων
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Είστε σίγουροι ότι θέλετε μηδενίσετε τους μετρητές ανζήτησης;",
+                "Επιβεβαίωση Μεδενισμού",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if (confirm == JOptionPane.YES_OPTION){
+        DatabaseUse.clearStatistics();
+        getSearchesData();
+        getCategoriesData();}
+        else return;
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

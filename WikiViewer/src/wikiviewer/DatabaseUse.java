@@ -17,7 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 
-import java.util.Date;;
+import java.util.Date;
 
 //Κλάση για την διαχείριση της βάσης δεδομένων
 public class DatabaseUse {
@@ -36,25 +36,25 @@ public class DatabaseUse {
         List<Category> categories = q.getResultList();
         return categories;
     }
-    
+
     //Query που επιστρέφει όλα τα άρθρα ταξινομημένα με φθίνουσα διάταξη ως προς την ημερομηνία αποθήκευσης
     public static List<Article> getArticles() {
         Query q = em.createQuery("SELECT a FROM Article a ORDER BY a.savedat DESC", Article.class);
         List<Article> articles = q.getResultList();
         return articles;
     }
-    
+
     //Query που επιστρέφει όλες τις αναζητήσεις ταξινομημένες με φθίνουσα διάταξη ως προς το πλήθος αναζητήσεων
     //και αύξουσα διάταξη ως προς το κείμενο αναζήτησης για όσες έχουν το ίδιο πλήθος αναζητήσεων    
     public static List<Search> getSearches() {
         Query q = em.createQuery("SELECT s from Search s order by s.numberofsearches desc, s.searchstring", Search.class);
         return q.getResultList();
     }
-    
+
     //Query που αναζητά και επιστρέφει την κατηγορία με βάση κάποιο όνομα (ή null αν δεν την βρει)
     public static Category getCategory(String name) {
         Query q = em.createNamedQuery("Category.findByName", Category.class);
-        q.setParameter("name", name); 
+        q.setParameter("name", name);
         try {
             Category category = (Category) q.getSingleResult();
             return category;
@@ -62,11 +62,11 @@ public class DatabaseUse {
             return null;
         }
     }
-    
+
     //Query που αναζητά και επιστρέφει το άρθρο με βάση κάποιον αριθμό σελίδας (ή null αν δεν το βρει)
     public static Article getArticle(int pageId) {
         Query q = em.createNamedQuery("Article.findByPageid", Article.class);
-        q.setParameter("pageid", pageId); 
+        q.setParameter("pageid", pageId);
         try {
             Article article = (Article) q.getSingleResult();
             return article;
@@ -74,11 +74,11 @@ public class DatabaseUse {
             return null;
         }
     }
-        
+
     //Query που αναζητά και επιστρέφει την αναζήτηση με βάση κάποιο κείμενο αναζήτησης (ή null αν δεν την βρει)
     public static Search getSearch(String searchString) {
         Query q = em.createNamedQuery("Search.findBySearchstring", Search.class);
-        q.setParameter("searchstring", searchString); 
+        q.setParameter("searchstring", searchString);
         try {
             Search search = (Search) q.getSingleResult();
             return search;
@@ -86,7 +86,7 @@ public class DatabaseUse {
             return null;
         }
     }
-    
+
     //Query που επιστρέφει το πλήθος αποθηκευμένων άρθρων για κάθε κατηγορία (στατιστικά κατηγορίας)
     //Τα στατιστικά επιστρέφονται με φθίνουσα διάταξη ως προς το πλήθος αποθηκευμένων άρθρων
     //και αύξουσα διάταξη ως προς το όνομα κατηγορίας για όσες έχουν το ίδιο πλήθος αποθηκευμένων άρθρων 
@@ -95,7 +95,7 @@ public class DatabaseUse {
         List<Object[]> statistics = q.getResultList();
         return statistics;
     }
-    
+
     //Query που επιστρέφει τα αποθηκευμένα άρθρα για μία κατηγορία
     public static List<Article> getArticlesForCategory(Category category) {
         Query q = em.createQuery("SELECT a FROM Article a WHERE a.categoryid = :category ORDER BY a.savedat DESC", Article.class);
@@ -103,7 +103,7 @@ public class DatabaseUse {
         List<Article> articles = q.getResultList();
         return articles;
     }
-    
+
     //Αποθηκεύει ένα άρθρο με timestamp την τρέχουσα ημερομηνία/ώρα και το επιστρέφει
     public static Article storeArticle(Article article) {
         em.getTransaction().begin();
@@ -112,7 +112,7 @@ public class DatabaseUse {
         em.getTransaction().commit();
         return article;
     }
-    
+
     //Αποθηκεύει μία αναζήτηση
     //Αν η αναζήτηση υπάρχει της αυξάνει κατά 1 το πλήθος αναζητήσεων
     //ενώ αν δεν υπάρχει την δημιουργεί με πλήθος αναζητήσεων = 1
@@ -121,27 +121,27 @@ public class DatabaseUse {
         if (search != null) {
             search.setNumberofsearches(search.getNumberofsearches() + 1);
         } else {
-            search = new Search(null, searchString, 1); 
+            search = new Search(null, searchString, 1);
         }
         em.getTransaction().begin();
         em.persist(search);
         em.getTransaction().commit();
     }
-    
+
     //Εισάγει κατηγορίες στο πίνακα categories αν δεν υπάρχουν ήδη
     public static void insertCategories(List<String> categoryNames) {
         if (!getCategories().isEmpty()) {
             return;
         }
         em.getTransaction().begin();
-        for(String categoryName : categoryNames) {
+        for (String categoryName : categoryNames) {
             Category category = new Category(null, categoryName);
             em.persist(category);
         }
         em.getTransaction().commit();
     }
-    
-        // Διαγράφει ένα άρθρο από τη βάση με βάση το pageid
+
+    // Διαγράφει ένα άρθρο από τη βάση με βάση το pageid
     // Επιστρέφει true αν διαγράφηκε, false αν δεν βρέθηκε
     public static boolean deleteArticleByPageid(int pageid) {
         Article article = getArticle(pageid);  // χρησιμοποιεί το NamedQuery Article.findByPageid
@@ -155,5 +155,18 @@ public class DatabaseUse {
         em.getTransaction().commit();
 
         return true;
-}
+    }
+
+    public static void clearStatistics() {
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM Search").executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        }
+    }
 }
