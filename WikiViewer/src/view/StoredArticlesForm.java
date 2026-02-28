@@ -336,7 +336,6 @@ public class StoredArticlesForm extends JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         int indexSelected = jList1.getSelectedIndex();
 
-        
         if (indexSelected == -1) {
             JOptionPane.showMessageDialog(
                     this,
@@ -346,24 +345,36 @@ public class StoredArticlesForm extends JFrame {
             return;
         }
 
-        // ✅ This line was missing
+        // Πάρε το άρθρο που επιλέχθηκε
         Article articleToDelete = articles.get(indexSelected);
 
-        boolean deleted = DatabaseUse.deleteArticleByPageid(articleToDelete.getPageid());
+        // Ερώτηση αν θέλει ο χρήστης να διαγραφεί το άρθρο
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Είστε σίγουροι ότι θέλετε να διαγράψετε το άρθρο;",
+                "Επιβεβαίωση Διαγραφής",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
 
-        if (deleted) {
-            updateArticles();   // refresh list
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Το άρθρο διαγράφηκε.",
-                    "Διαγραφή άρθρου",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Το άρθρο δεν βρέθηκε.",
-                    "Διαγραφή άρθρου",
-                    JOptionPane.WARNING_MESSAGE);
+        // Αν πατήσει ΝΑΙ
+        if (confirm == JOptionPane.YES_OPTION) {
+
+            boolean deleted = DatabaseUse.deleteArticleByPageid(articleToDelete.getPageid());
+
+            if (deleted) {
+                updateArticles();
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Το άρθρο διαγράφηκε.",
+                        "Διαγραφή άρθρου",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Το άρθρο δεν βρέθηκε.",
+                        "Διαγραφή άρθρου",
+                        JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 

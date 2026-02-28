@@ -1,0 +1,17 @@
+# NetBeans
+nbproject/private/
+
+# Build
+build/
+
+# Derby DB
+derby.log
+*.lck
+*.dat
+*.ctrl
+
+# Database
+wikiDB/
+
+# Class files
+*.class
