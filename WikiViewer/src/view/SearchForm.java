@@ -185,35 +185,21 @@ public class SearchForm extends javax.swing.JFrame {
     }
 
     //Ανοίγει νέα φόρμα και συμπληρώνει τα νέα στοιχεία του άρθρου
-    //Ελέγχει πρώτα αν το άρθρο υπάρχει στη ΒΔ ώστε να εμφανίσει τα εμπλουτισμένα δεδομένα (R4)
     public void showSelectedArticleDetails() {
         int indexSelected = jList1.getSelectedIndex();
         if (indexSelected != -1) {
-            //Εφόσον έχει επιλεγεί άρθρο το λαμβάνουμε από τη λίστα αποτελεσμάτων
+            //Εφόσον έχει επιλεγεί άρθρο το λαμβάνουμε από το API
             selectedArticle = currentPageArticles.get(indexSelected);
 
-            //Ελέγχουμε αν το άρθρο υπάρχει ήδη αποθηκευμένο στη ΒΔ (R4)
-            Article storedArticle = DatabaseUse.getArticle(selectedArticle.getPageid());
+            //Παίρνουμε και το πλήρες κείμενο του άρθρου από το API
+            String content = apiData.getPageContents(selectedArticle.getPageid());
+            selectedArticle.setContent(content);
 
-            if (storedArticle != null) {
-                //Το άρθρο υπάρχει στη ΒΔ: χρησιμοποιούμε τα εμπλουτισμένα δεδομένα (σχόλια, βαθμολογία, κατηγορία)
-                //Αν το content λείπει από τη ΒΔ, το φέρνουμε από το API
-                if (storedArticle.getContent() == null || storedArticle.getContent().isEmpty()) {
-                    String content = apiData.getPageContents(storedArticle.getPageid());
-                    storedArticle.setContent(content);
-                }
-                //Εμφάνιση με τα εμπλουτισμένα δεδομένα από τη ΒΔ
-                this.dispose();
-                ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(storedArticle, this);
-                articleDetailsForm.setVisible(true);
-            } else {
-                //Το άρθρο ΔΕΝ υπάρχει στη ΒΔ: το πλήρες κείμενο φέρνεται από το API
-                String content = apiData.getPageContents(selectedArticle.getPageid());
-                selectedArticle.setContent(content);
-                this.dispose();
-                ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(selectedArticle, this);
-                articleDetailsForm.setVisible(true);
-            }
+            //Κλείσιμο της φόρμας αναζήτησης και εμφάνιση την φόρμας προβολής του επιλεγμένου άρθρου
+            this.dispose();
+            ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(selectedArticle, this);
+            articleDetailsForm.setVisible(true);
+
         } else {
             //Guard ώστε να μην γίνει αναζήτηση εάν δεν έχει επιλεγεί άρθρο
             JOptionPane.showMessageDialog(
