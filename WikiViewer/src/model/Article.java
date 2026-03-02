@@ -25,18 +25,21 @@ import javax.persistence.TemporalType;
 import wikiviewer.Helpers;
 
 //POJO κλάση για τον πίνακα Article
-
+/**
+ * POJO κλάση για τον πίνακα Article.
+ * Αντιστοιχεί σε εγγραφή του πίνακα ARTICLE στη βάση δεδομένων.
+ */
 @Entity
 @Table(name = "ARTICLE")
 @NamedQueries({
-    @NamedQuery(name = "Article.findAll", query = "SELECT a FROM Article a"),
-    @NamedQuery(name = "Article.findByArticleid", query = "SELECT a FROM Article a WHERE a.articleid = :articleid"),
-    @NamedQuery(name = "Article.findByPageid", query = "SELECT a FROM Article a WHERE a.pageid = :pageid"),
-    @NamedQuery(name = "Article.findByTitle", query = "SELECT a FROM Article a WHERE a.title = :title"),
-    @NamedQuery(name = "Article.findBySnippet", query = "SELECT a FROM Article a WHERE a.snippet = :snippet"),
-    @NamedQuery(name = "Article.findByTimestamp", query = "SELECT a FROM Article a WHERE a.timestamp = :timestamp"),
-    @NamedQuery(name = "Article.findByComments", query = "SELECT a FROM Article a WHERE a.comments = :comments"),
-    @NamedQuery(name = "Article.findByRating", query = "SELECT a FROM Article a WHERE a.rating = :rating")})
+        @NamedQuery(name = "Article.findAll", query = "SELECT a FROM Article a"),
+        @NamedQuery(name = "Article.findByArticleid", query = "SELECT a FROM Article a WHERE a.articleid = :articleid"),
+        @NamedQuery(name = "Article.findByPageid", query = "SELECT a FROM Article a WHERE a.pageid = :pageid"),
+        @NamedQuery(name = "Article.findByTitle", query = "SELECT a FROM Article a WHERE a.title = :title"),
+        @NamedQuery(name = "Article.findBySnippet", query = "SELECT a FROM Article a WHERE a.snippet = :snippet"),
+        @NamedQuery(name = "Article.findByTimestamp", query = "SELECT a FROM Article a WHERE a.timestamp = :timestamp"),
+        @NamedQuery(name = "Article.findByComments", query = "SELECT a FROM Article a WHERE a.comments = :comments"),
+        @NamedQuery(name = "Article.findByRating", query = "SELECT a FROM Article a WHERE a.rating = :rating") })
 public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -158,7 +161,7 @@ public class Article implements Serializable {
     public void setCategoryid(Category categoryid) {
         this.categoryid = categoryid;
     }
-    
+
     public Date getSavedat() {
         return savedat;
     }
@@ -181,21 +184,21 @@ public class Article implements Serializable {
             return false;
         }
         Article other = (Article) object;
-        if ((this.articleid == null && other.articleid != null) || (this.articleid != null && !this.articleid.equals(other.articleid))) {
+        if ((this.articleid == null && other.articleid != null)
+                || (this.articleid != null && !this.articleid.equals(other.articleid))) {
             return false;
         }
         return true;
     }
-    
-    //Διαμορφώνω την toString() έτσι όπως την χρειάζομαι
+
+    // Διαμορφώνω την toString() έτσι όπως την χρειάζομαι
     @Override
     public String toString() {
-        return       
-            "<html>" +
-            "<br><b>Άρθρο:</b> " + getPageid() + "<br>" +
-            "<b>Τίτλος:</b> " + getTitle() + "<br>" +
-            "<b>Ημερομηνία-Ώρα:</b> " + Helpers.getFormattedTimestamp(getTimestamp()) + "<br>" +
-            "<b>Απόσπασμα:</b> ... " + getSnippet() + " ..." +
-            "</html>";
+        return "<html>" +
+                "<br><b>Άρθρο:</b> " + getPageid() + "<br>" +
+                "<b>Τίτλος:</b> " + getTitle() + "<br>" +
+                "<b>Ημερομηνία-Ώρα:</b> " + Helpers.getFormattedTimestamp(getTimestamp()) + "<br>" +
+                "<b>Απόσπασμα:</b> ... " + getSnippet() + " ..." +
+                "</html>";
     }
 }

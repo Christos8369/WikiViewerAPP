@@ -18,14 +18,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 //POJO κλάση για τον πίνακα Search
+/**
+ * POJO κλάση για τον πίνακα Search.
+ * Αντιστοιχεί σε εγγραφή του πίνακα SEARCH στη βάση δεδομένων.
+ */
 @Entity
 @Table(name = "SEARCH")
 @NamedQueries({
-    @NamedQuery(name = "Search.findAll", query = "SELECT s FROM Search s"),
-    @NamedQuery(name = "Search.findBySearchid", query = "SELECT s FROM Search s WHERE s.searchid = :searchid"),
-    @NamedQuery(name = "Search.findBySearchstring", query = "SELECT s FROM Search s WHERE s.searchstring = :searchstring"),
-    @NamedQuery(name = "Search.findByNumberofsearches", query = "SELECT s FROM Search s WHERE s.numberofsearches = :numberofsearches"),
-    @NamedQuery(name = "Search.Delete", query = "DELETE FROM Search")}) //Φτιάξαμε αυτό το query ώστε κάποιος να μπορεί να μηδενίσει τα statistics search
+        @NamedQuery(name = "Search.findAll", query = "SELECT s FROM Search s"),
+        @NamedQuery(name = "Search.findBySearchid", query = "SELECT s FROM Search s WHERE s.searchid = :searchid"),
+        @NamedQuery(name = "Search.findBySearchstring", query = "SELECT s FROM Search s WHERE s.searchstring = :searchstring"),
+        @NamedQuery(name = "Search.findByNumberofsearches", query = "SELECT s FROM Search s WHERE s.numberofsearches = :numberofsearches"),
+        @NamedQuery(name = "Search.Delete", query = "DELETE FROM Search") }) // Φτιάξαμε αυτό το query ώστε κάποιος να
+                                                                             // μπορεί να μηδενίσει τα statistics search
 public class Search implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -92,7 +97,8 @@ public class Search implements Serializable {
             return false;
         }
         Search other = (Search) object;
-        if ((this.searchid == null && other.searchid != null) || (this.searchid != null && !this.searchid.equals(other.searchid))) {
+        if ((this.searchid == null && other.searchid != null)
+                || (this.searchid != null && !this.searchid.equals(other.searchid))) {
             return false;
         }
         return true;

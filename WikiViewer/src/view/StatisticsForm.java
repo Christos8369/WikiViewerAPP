@@ -27,37 +27,48 @@ import model.Search;
 import wikiviewer.DatabaseUse;
 import wikiviewer.WikiViewer;
 
-//Φόρμα στατιστικών
+/**
+ * Φόρμα στατιστικών.
+ */
 public class StatisticsForm extends javax.swing.JFrame {
 
-    //Τα μοντέλα των δύο πινάκων
+    // Τα μοντέλα των δύο πινάκων
     private DefaultTableModel categoriesTableModel;
     private DefaultTableModel searchesTableModel;
 
-    //Οι αποθηκευμένες αναζητήσεις
+    // Οι αποθηκευμένες αναζητήσεις
     private List<Search> searches;
 
-    //Τα στατιστικά κατηγοριών
+    // Τα στατιστικά κατηγοριών
     private List<Object[]> categoryStatistics;
-    
-    //Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για κάθε εικονίδιο
+
+    /**
+     * Δημιουργεί και επιστρέφει ένα εικονίδιο με τις επιθυμητές διαστάσεις.
+     * 
+     * @param path Η διαδρομή του εικονιδίου.
+     * @param w    Το πλάτος του εικονιδίου.
+     * @param h    Το ύψος του εικονιδίου.
+     * @return Το εικονίδιο με τις νέες διαστάσεις.
+     */
     private ImageIcon scaledIcon(String path, int w, int h) {
         Image img = new ImageIcon(MainForm.class.getResource(path)).getImage();
         Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    //Constructor της φόρμας
+    /**
+     * Constructor της φόρμας στατιστικών.
+     */
     public StatisticsForm() {
         initComponents();
 
-        //Αρχικοποιήσεις
+        // Αρχικοποιήσεις
         setTitle("Στατιστικά");
         Image pageIcon = new ImageIcon(MainForm.class.getResource("/resources/wikilogo.png")).getImage();
         setIconImage(pageIcon);
         jLabel1.setText("Αποθηκευμένα άρθρα ανά κατηγορία:");
         jLabel2.setText("Στατιστικά αναζητήσεων:");
-        
+
         jButton1.setText("Δημιουργία PDF");
         jButton1.setIcon(scaledIcon("/resources/file-pdf.png", 16, 16));
         jButton2.setText("Επιστροφή");
@@ -65,47 +76,49 @@ public class StatisticsForm extends javax.swing.JFrame {
         jButton3.setText("Καθαρισμός στατιστικών αναζητήσεων");
         jButton3.setIcon(scaledIcon("/resources/sweep.png", 16, 16));
 
-        //Δημιουργία μοντέλου για τον πίνακα με τα στατιστικά κατηγοριών
+        // Δημιουργία μοντέλου για τον πίνακα με τα στατιστικά κατηγοριών
         categoriesTableModel = new DefaultTableModel() {
-            //Κάνουμε override αυτή την μέθοδο ώστε να μην μπορούν να τροποποιηθούν τα στοιχεία του πίνακα
+            // Κάνουμε override αυτή την μέθοδο ώστε να μην μπορούν να τροποποιηθούν τα
+            // στοιχεία του πίνακα
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        //Ορίζουμε τις στήλες του μοντέλου
+        // Ορίζουμε τις στήλες του μοντέλου
         categoriesTableModel.addColumn("Κατηγορία");
         categoriesTableModel.addColumn("Αποθηκευμένα άρθρα");
 
-        //Βάζουμε το μοντέλο στον πρώτο πίνακα
+        // Βάζουμε το μοντέλο στον πρώτο πίνακα
         jTable1.setModel(categoriesTableModel);
 
-        //Δημιουργία μοντέλου για τον πίνακα με τα στατιστικά αναζητήσεων
+        // Δημιουργία μοντέλου για τον πίνακα με τα στατιστικά αναζητήσεων
         searchesTableModel = new DefaultTableModel() {
-            //Κάνουμε override αυτή την μέθοδο ώστε να μην μπορούν να τροποποιηθούν τα στοιχεία του πίνακα
+            // Κάνουμε override αυτή την μέθοδο ώστε να μην μπορούν να τροποποιηθούν τα
+            // στοιχεία του πίνακα
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        //Στήλε του μοντέλου
+        // Στήλε του μοντέλου
         searchesTableModel.addColumn("Λέξη-κλειδί");
         searchesTableModel.addColumn("Πλήθος αναζητήσεων");
 
-        //Βάζουμε το μοντέλο στον δεύτερο πίνακα
+        // Βάζουμε το μοντέλο στον δεύτερο πίνακα
         jTable2.setModel(searchesTableModel);
 
-        //Κεντράρισμα της φόρμας
+        // Κεντράρισμα της φόρμας
         setLocationRelativeTo(null);
-        //Η φόρμα δεν μπορεί να αλλάξει μέγεθος
+        // Η φόρμα δεν μπορεί να αλλάξει μέγεθος
         setResizable(false);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    //Λαμβάνει από τη βάση τα στατιστικά κατηγοριών και ενημερώνει τον πρώτο πίνακα 
+    // Λαμβάνει από τη βάση τα στατιστικά κατηγοριών και ενημερώνει τον πρώτο πίνακα
     public void getCategoriesData() {
         categoriesTableModel.setRowCount(0);
         categoryStatistics = DatabaseUse.getCategoryStatistics();
@@ -114,16 +127,16 @@ public class StatisticsForm extends javax.swing.JFrame {
         }
     }
 
-    //Λαμβάνει από τη βάση τις αναζητήσεις και ενημερώνει τον δεύτερο πίνακα 
+    // Λαμβάνει από τη βάση τις αναζητήσεις και ενημερώνει τον δεύτερο πίνακα
     public void getSearchesData() {
         searchesTableModel.setRowCount(0);
         searches = DatabaseUse.getSearches();
         for (Search search : searches) {
-            searchesTableModel.addRow(new Object[]{search.getSearchstring(), search.getNumberofsearches()});
+            searchesTableModel.addRow(new Object[] { search.getSearchstring(), search.getNumberofsearches() });
         }
     }
 
-    //Δημιουργεί το αρχείο pdf με τα στατιστικά
+    // Δημιουργεί το αρχείο pdf με τα στατιστικά
     public void createPDF() {
         OutputStream outputStream = null;
         Document document = null;
@@ -154,8 +167,7 @@ public class StatisticsForm extends javax.swing.JFrame {
                         "Το αρχείο υπάρχει ήδη:\n" + pdfFile.getAbsolutePath() + "\n\nΘέλετε αντικατάσταση;",
                         "Επιβεβαίωση αντικατάστασης",
                         JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                );
+                        JOptionPane.WARNING_MESSAGE);
                 if (overwrite != JOptionPane.YES_OPTION) {
                     return;
                 }
@@ -220,28 +232,37 @@ public class StatisticsForm extends javax.swing.JFrame {
                     this,
                     "Δημιουργήθηκε το αρχείο:\n" + pdfFile.getAbsolutePath(),
                     "Επιτυχία αποθήκευσης αρχείου",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+                    JOptionPane.INFORMATION_MESSAGE);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,
                     "Πρόβλημα στην δημιουργία του αρχείου Statistics.pdf\n" + e.getMessage(),
                     "Αποτυχία αποθήκευσης αρχείου",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    JOptionPane.ERROR_MESSAGE);
         } finally {
             // safety close σε περίπτωση που σκάσει πριν το close
-            try { if (document != null && document.isOpen()) document.close(); } catch (Exception ignored) {}
-            try { if (outputStream != null) outputStream.close(); } catch (Exception ignored) {}
+            try {
+                if (document != null && document.isOpen())
+                    document.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (outputStream != null)
+                    outputStream.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -259,30 +280,28 @@ public class StatisticsForm extends javax.swing.JFrame {
         jLabel1.setText("jLabel1");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null }
+                },
+                new String[] {
+                        "Title 1", "Title 2", "Title 3", "Title 4"
+                }));
         jTable1.setMaximumSize(new java.awt.Dimension(2147483647, 100));
         jScrollPane1.setViewportView(jTable1);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null }
+                },
+                new String[] {
+                        "Title 1", "Title 2", "Title 3", "Title 4"
+                }));
         jScrollPane2.setViewportView(jTable2);
 
         jLabel2.setText("jLabel2");
@@ -311,67 +330,75 @@ public class StatisticsForm extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(12, 22, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 22, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jButton1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jButton3)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jButton2))
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 638,
+                                                Short.MAX_VALUE)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 354,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jScrollPane1)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 220,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(21, 21, 21)));
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(27, Short.MAX_VALUE))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButton1)
+                                        .addComponent(jButton2)
+                                        .addComponent(jButton3))
+                                .addContainerGap(27, Short.MAX_VALUE)));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Δημιουργεί το αρχείο pdf
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    // Δημιουργεί το αρχείο pdf
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         createPDF();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    //Μετάβαση στην αρχική φόρμα
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    // Μετάβαση στην αρχική φόρμα
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         WikiViewer.mainForm.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-    //Καθαρισμός ΜΟΝΟ των αναζητήσεων
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
+     // Καθαρισμός ΜΟΝΟ των αναζητήσεων
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Είστε σίγουροι ότι θέλετε μηδενίσετε τους μετρητές αναζήτησης;",
                 "Επιβεβαίωση Μηδενισμού",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
-        if (confirm == JOptionPane.YES_OPTION){
-        DatabaseUse.clearStatistics();
-        getSearchesData();
-        getCategoriesData();}
-    }//GEN-LAST:event_jButton3ActionPerformed
+        if (confirm == JOptionPane.YES_OPTION) {
+            DatabaseUse.clearStatistics();
+            getSearchesData();
+            getCategoriesData();
+        }
+    }// GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

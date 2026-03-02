@@ -20,7 +20,9 @@ import wikiviewer.DatabaseUse;
 import wikiviewer.Helpers;
 import wikiviewer.WikiViewer;
 
-//Φόρμα αναζήτησης άρθρων στο API
+/**
+ * Φόρμα αναζήτησης άρθρων στο API.
+ */
 public class SearchForm extends javax.swing.JFrame {
 
     // Ότι δεδομένα μας επιστρέφει το Api
@@ -38,16 +40,23 @@ public class SearchForm extends javax.swing.JFrame {
     // Το μοντέλο της λίστας
     private final DefaultListModel<String> listModel;
 
-    // Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω
-    // μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για
-    // κάθε εικονίδιο
+    /**
+     * Δημιουργεί και επιστρέφει ένα εικονίδιο με τις επιθυμητές διαστάσεις.
+     * 
+     * @param path Η διαδρομή του εικονιδίου.
+     * @param w    Το πλάτος του εικονιδίου.
+     * @param h    Το ύψος του εικονιδίου.
+     * @return Το εικονίδιο με τις νέες διαστάσεις.
+     */
     private ImageIcon scaledIcon(String path, int w, int h) {
         Image img = new ImageIcon(MainForm.class.getResource(path)).getImage();
         Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    // Constructor της φόρμας
+    /**
+     * Constructor της φόρμας αναζήτησης.
+     */
     public SearchForm() {
         initComponents();
 
@@ -97,8 +106,12 @@ public class SearchForm extends javax.swing.JFrame {
         jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    // Επιστρέφει την αναζήτηση που έχει εισάγει ο χρήστης στο jTextField (χωρίς
-    // επιπλέον κενά και μέχρι 100 χαρακτήρες)
+    /**
+     * Επιστρέφει την αναζήτηση που έχει εισάγει ο χρήστης στο jTextField
+     * (χωρίς επιπλέον κενά και μέχρι 100 χαρακτήρες).
+     * 
+     * @return Η συμβολοσειρά αναζήτησης.
+     */
     public String getSearchString() {
         // Αφαίρεση επιπλέον κενών με Regex
         String searchString = jTextField1.getText().trim().replaceAll("\\s+", " ");
@@ -109,7 +122,9 @@ public class SearchForm extends javax.swing.JFrame {
         return searchString;
     }
 
-    // Εμφάνιση των άρθρων της τρέχουσας σελίδας
+    /**
+     * Εμφάνιση των άρθρων της τρέχουσας σελίδας.
+     */
     private void showCurrentPageArticles() {
         // Βάζουμε στην λίστα τα αποτελέσματα της τρέχουσας σελίδας αποτελεσμάτων
         if (currentPageArticles != null && !currentPageArticles.isEmpty()) {
@@ -136,7 +151,11 @@ public class SearchForm extends javax.swing.JFrame {
         previousSearchString = getSearchString();
     }
 
-    // Πραγματοποιεί την αναζήτηση για την συγκεκριμένη συμβολοσειρά αναζήτησης
+    /**
+     * Πραγματοποιεί την αναζήτηση για την συγκεκριμένη συμβολοσειρά αναζήτησης.
+     * 
+     * @param searchString Η συμβολοσειρά αναζήτησης.
+     */
     public void search(String searchString) {
 
         // Guard ώστε να μην γίνει αναζήτηση εάν το jTextField είναι κενό
@@ -164,7 +183,9 @@ public class SearchForm extends javax.swing.JFrame {
         showCurrentPageArticles();
     }
 
-    // Εμφάνιση των αποτελεσμάτων της προηγούμενης σελίδας
+    /**
+     * Εμφάνιση των αποτελεσμάτων της προηγούμενης σελίδας.
+     */
     public void previousPage() {
         if (apiData.hasPrevious()) {
             currentPageArticles = apiData.getPreviousPageArticles();
@@ -172,7 +193,9 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    // Εμφάνιση των αποτελεσμάτων της επόμενης σελίδας
+    /**
+     * Εμφάνιση των αποτελεσμάτων της επόμενης σελίδας.
+     */
     public void nextPage() {
         if (apiData.hasNext()) {
             currentPageArticles = apiData.getNextPageArticles();
@@ -180,8 +203,12 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    // Τοποθετεί στην λίστα τα δεδομένα των άρθρων της τρέχουσας σελίδας
-    // αποτελεσμάτων
+    /**
+     * Τοποθετεί στην λίστα τα δεδομένα των άρθρων της τρέχουσας σελίδας
+     * αποτελεσμάτων.
+     * 
+     * @param articles Η λίστα άρθρων προς εμφάνιση.
+     */
     public void setListArticles(List<Article> articles) {
         listModel.clear();
         for (Article article : articles) {
@@ -189,7 +216,9 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    // Ανοίγει νέα φόρμα και συμπληρώνει τα νέα στοιχεία του άρθρου
+    /**
+     * Ανοίγει νέα φόρμα και συμπληρώνει τα στοιχεία του επιλεγμένου άρθρου.
+     */
     public void showSelectedArticleDetails() {
         int indexSelected = jList1.getSelectedIndex();
         if (indexSelected != -1) {

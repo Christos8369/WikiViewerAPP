@@ -16,33 +16,47 @@ import model.Category;
 import wikiviewer.DatabaseUse;
 import wikiviewer.Helpers;
 
-//Φόρμα προβολής επιλεγμένου άρθρου
+/**
+ * Φόρμα προβολής επιλεγμένου άρθρου.
+ */
 public class ArticleDetailsForm extends JFrame {
 
-    //Δήλωση έτσι ώστε να ξέρουμε από ποια φόρμα άνοιξε 
+    // Δήλωση έτσι ώστε να ξέρουμε από ποια φόρμα άνοιξε
     private final JFrame parentForm;
 
-    //Το άρθρο που επιλέχτηκε
+    // Το άρθρο που επιλέχτηκε
     private Article selectedArticle;
 
-    //Το άρθρο το οποίο αποθηκεύτηκε
+    // Το άρθρο το οποίο αποθηκεύτηκε
     private Article storedArticle;
 
-    //Λίστα με τις κατηγορίες των άρθρων
+    // Λίστα με τις κατηγορίες των άρθρων
     private final List<Category> categories;
-    
-    //Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για κάθε εικονίδιο
+
+    /**
+     * Δημιουργεί και επιστρέφει ένα εικονίδιο με τις επιθυμητές διαστάσεις.
+     * 
+     * @param path Η διαδρομή του εικονιδίου.
+     * @param w    Το πλάτος του εικονιδίου.
+     * @param h    Το ύψος του εικονιδίου.
+     * @return Το εικονίδιο με τις νέες διαστάσεις.
+     */
     private ImageIcon scaledIcon(String path, int w, int h) {
         Image img = new ImageIcon(MainForm.class.getResource(path)).getImage();
         Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    //Constructor της φόρμας
+    /**
+     * Constructor της φόρμας προβολής άρθρου.
+     * 
+     * @param selectedArticle Το επιλεγμένο άρθρο προς προβολή.
+     * @param parentForm      Η φόρμα από την οποία άνοιξε.
+     */
     public ArticleDetailsForm(Article selectedArticle, JFrame parentForm) {
         initComponents();
 
-        //Αρχικοποιήσεις
+        // Αρχικοποιήσεις
         Image pageIcon = new ImageIcon(MainForm.class.getResource("/resources/wikilogo.png")).getImage();
         setIconImage(pageIcon);
         this.parentForm = parentForm;
@@ -56,55 +70,65 @@ public class ArticleDetailsForm extends JFrame {
         jButton1.setIcon(scaledIcon("/resources/disk.png", 16, 16));
         jButton2.setText("Επιστροφή");
         jButton2.setIcon(scaledIcon("/resources/arrow-left.png", 16, 16));
-        
+
         jLabel1.setText("Βαθμολογία");
         jLabel2.setText("Κατηγορία");
         jLabel3.setText("Σχόλια");
         jLabel4.setText("");
 
-        //Βάζω στον comboBox της βαθμολογίας. της τιμές που θέλω να μπορεί να βάλει ο χρήστης
+        // Βάζω στον comboBox της βαθμολογίας. της τιμές που θέλω να μπορεί να βάλει ο
+        // χρήστης
         jComboBox1.removeAllItems();
         jComboBox1.addItem("-");
         for (int i = 1; i <= 5; i++) {
             jComboBox1.addItem(String.valueOf(i));
         }
 
-        //Βάζω στο comboBox τις κατηγορίες που έχω στην DataBase 
+        // Βάζω στο comboBox τις κατηγορίες που έχω στην DataBase
         jComboBox2.removeAllItems();
         jComboBox2.addItem("-");
         for (Category category : categories) {
             jComboBox2.addItem(category.getName());
         }
 
-        //Εφόσον το επιλεγμένο άρθρο είναι αποθηκευμένο ενημερώνουμε τα στοιχεία της φόρμας (σχόλια, βαθμολογία, κατηγορία, ημερομηνία/ώρα αποθήκευσης)
+        // Εφόσον το επιλεγμένο άρθρο είναι αποθηκευμένο ενημερώνουμε τα στοιχεία της
+        // φόρμας (σχόλια, βαθμολογία, κατηγορία, ημερομηνία/ώρα αποθήκευσης)
         if (storedArticle != null) {
             updateFormWithStoredArticle();
         }
 
-        //Τίτλος φόρμας
-        setTitle("Άρθρο " + selectedArticle.getPageid() + " - " + selectedArticle.getTitle() + " (" + Helpers.getFormattedTimestamp(selectedArticle.getTimestamp()) + ")");
-        //Κεντράρισμα της φόρμας
+        // Τίτλος φόρμας
+        setTitle("Άρθρο " + selectedArticle.getPageid() + " - " + selectedArticle.getTitle() + " ("
+                + Helpers.getFormattedTimestamp(selectedArticle.getTimestamp()) + ")");
+        // Κεντράρισμα της φόρμας
         setLocationRelativeTo(null);
-        //Η φόρμα δεν μπορεί να αλλάξει μέγεθος έτσι ώστε να μην χαλάει η γεωμετρία της
+        // Η φόρμα δεν μπορεί να αλλάξει μέγεθος έτσι ώστε να μην χαλάει η γεωμετρία της
         setResizable(false);
-        //Επειδή η φόρμα ανοίγει μέσα από την κεντρική φόρμα, απενεργοποιούμε την λειτουργία του Χ στο παράθυρο έτσι ώστε να χρησιμοποιείται μόνο το κουμπί επιστροφή και 
-        //να κλείνει το πρόγραμμα μόνο από την κετρική φόρμα
+        // Επειδή η φόρμα ανοίγει μέσα από την κεντρική φόρμα, απενεργοποιούμε την
+        // λειτουργία του Χ στο παράθυρο έτσι ώστε να χρησιμοποιείται μόνο το κουμπί
+        // επιστροφή και
+        // να κλείνει το πρόγραμμα μόνο από την κετρική φόρμα
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    //Ενημερώνει το άρθρο με τα επιπλέον στοιχεία της φόρμας (σχόλια, βαθμολογία, κατηγορία)
+    /**
+     * Ενημερώνει το άρθρο με τα επιπλέον στοιχεία της φόρμας (σχόλια, βαθμολογία,
+     * κατηγορία).
+     * 
+     * @param article Το άρθρο προς ενημέρωση.
+     */
     public void updateArticleWithFormValues(Article article) {
-        //Ενημέρωση σχολίων (μέχρι 1000 χαρακτήρες)
+        // Ενημέρωση σχολίων (μέχρι 1000 χαρακτήρες)
         String comments = Helpers.getString(jTextArea1.getText(), 1000);
         article.setComments(comments);
 
-        //Ενημέρωση βαθμολογίας
+        // Ενημέρωση βαθμολογίας
         Integer selectedRating = (jComboBox1.getSelectedIndex() > 0)
                 ? jComboBox1.getSelectedIndex()
                 : null;
         article.setRating(selectedRating);
 
-        //Ενημέρωση κατηγορίας
+        // Ενημέρωση κατηγορίας
         String selectedCategoryName = (jComboBox2.getSelectedIndex() > 0)
                 ? (String) jComboBox2.getSelectedItem()
                 : null;
@@ -112,22 +136,24 @@ public class ArticleDetailsForm extends JFrame {
         article.setCategoryid(selectedCategory);
     }
 
-    //Ενημερώνει τα στοιχεία της φόρμας (σχόλια, βαθμολογία, κατηγορία, ημερομηνία/ώρα αποθήκευσης) από τα στοιχεία του αποθηκευμένου άρθρου
+    /**
+     * Ενημερώνει τα στοιχεία της φόρμας από τα στοιχεία του αποθηκευμένου άρθρου.
+     */
     private void updateFormWithStoredArticle() {
-        //Ενημέρωση του επιλεγμενου άρθρου
+        // Ενημέρωση του επιλεγμενου άρθρου
         selectedArticle.setComments(storedArticle.getComments());
         selectedArticle.setCategoryid(storedArticle.getCategoryid());
         selectedArticle.setRating(storedArticle.getRating());
 
-        //Ενημέρωση σχολίων
+        // Ενημέρωση σχολίων
         jTextArea1.setText(storedArticle.getComments());
 
-        //Ενημέρωση βαθμολογίας
+        // Ενημέρωση βαθμολογίας
         int storedRatingIndex = (storedArticle.getRating() != null)
                 ? storedArticle.getRating()
                 : 0;
 
-        //Ενημέρωση κατηγορίας
+        // Ενημέρωση κατηγορίας
         jComboBox1.setSelectedIndex(storedRatingIndex);
         if (storedArticle.getCategoryid() == null) {
             jComboBox2.setSelectedIndex(0);
@@ -135,31 +161,34 @@ public class ArticleDetailsForm extends JFrame {
             jComboBox2.setSelectedItem(storedArticle.getCategoryid().getName());
         }
 
-        //Ενημέρωση ετικέτας ημερομηνίας/ώρας αποθήκευσης
+        // Ενημέρωση ετικέτας ημερομηνίας/ώρας αποθήκευσης
         updateSavedAt();
     }
 
-    //Ενημέρωση της ετικέτας με την ημερομηνία/ώρα αποθήκευσης του άρθρου
+    // Ενημέρωση της ετικέτας με την ημερομηνία/ώρα αποθήκευσης του άρθρου
     private void updateSavedAt() {
-        jLabel4.setText("Αποθηκευμένο στη βάση δεδομένων: " + Helpers.getFormattedTimestamp(storedArticle.getSavedat()));
+        jLabel4.setText(
+                "Αποθηκευμένο στη βάση δεδομένων: " + Helpers.getFormattedTimestamp(storedArticle.getSavedat()));
     }
 
-    //Αποθηκεύει το άρθρο
+    // Αποθηκεύει το άρθρο
     public void storeArticle() {
-        //Επιλογή του άρθρου που θα αποθηκευτεί (αν υπάρχει ήδη στη βάση επιλέγουμε αυτό)
+        // Επιλογή του άρθρου που θα αποθηκευτεί (αν υπάρχει ήδη στη βάση επιλέγουμε
+        // αυτό)
         Article articleToStore = (storedArticle != null)
                 ? storedArticle
                 : selectedArticle;
 
-        //Ενημέρωση του άρθρου με τα επιπλέον στοιχεία από την φόρμα (βαθμολογία, κατηγορία, σχόλια)
+        // Ενημέρωση του άρθρου με τα επιπλέον στοιχεία από την φόρμα (βαθμολογία,
+        // κατηγορία, σχόλια)
         updateArticleWithFormValues(articleToStore);
 
-        //Αποθηκεύουμε το άρθρο
+        // Αποθηκεύουμε το άρθρο
         storedArticle = DatabaseUse.storeArticle(articleToStore);
-        //Ενημερώνουμε την ετικέτα με την ημερομηνία/ώρα αποθήκευσης του άρθρου
+        // Ενημερώνουμε την ετικέτα με την ημερομηνία/ώρα αποθήκευσης του άρθρου
         updateSavedAt();
 
-        //Εμφάνιση μηνύματος αποθήκευσης άρθρου
+        // Εμφάνιση μηνύματος αποθήκευσης άρθρου
         JOptionPane.showMessageDialog(
                 this,
                 "Το άρθρο αποθηκεύτηκε",
@@ -168,10 +197,13 @@ public class ArticleDetailsForm extends JFrame {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -215,86 +247,125 @@ public class ArticleDetailsForm extends JFrame {
 
         jLabel1.setText("jLabel1");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(
+                new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel2.setText("jLabel2");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox2.setModel(
+                new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel4.setText("jLabel4");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                            .addGap(17, 17, 17)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGap(46, 46, 46)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 983, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(88, 88, 88)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 912, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 160,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(layout.createSequentialGroup()
+                                                        .addGap(17, 17, 17)
+                                                        .addGroup(layout
+                                                                .createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addGroup(layout.createSequentialGroup()
+                                                                        .addGroup(layout.createParallelGroup(
+                                                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                .addComponent(jLabel3,
+                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                        53,
+                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addGroup(layout.createSequentialGroup()
+                                                                                        .addComponent(jLabel1,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                                87,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                        .addPreferredGap(
+                                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                        .addComponent(jComboBox1,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addGap(46, 46, 46)
+                                                                        .addComponent(jLabel2,
+                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                72,
+                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addPreferredGap(
+                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addComponent(jComboBox2,
+                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                113,
+                                                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(jScrollPane2,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 983,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(jButton1,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 160,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(jLabel4,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 399,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGroup(layout.createSequentialGroup()
+                                                        .addGap(88, 88, 88)
+                                                        .addComponent(jScrollPane1,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 912,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addContainerGap(17, Short.MAX_VALUE)));
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton1, jButton2});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] { jButton1, jButton2 });
 
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(0, 68, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel4)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(19, 19, 19)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 478,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel3)
+                                                .addGap(0, 68, Short.MAX_VALUE))
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel4)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(33, 33, 33)));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Αποθήκευση άρθρου
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    // Αποθήκευση άρθρου
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         storeArticle();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    //Μετάβαση στην προηγούμενη φόρμα
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    // Μετάβαση στην προηγούμενη φόρμα
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
         parentForm.setVisible(true);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
