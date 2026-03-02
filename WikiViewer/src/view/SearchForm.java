@@ -23,34 +23,37 @@ import wikiviewer.WikiViewer;
 //Φόρμα αναζήτησης άρθρων στο API
 public class SearchForm extends javax.swing.JFrame {
 
-    //Ότι δεδομένα μας επιστρέφει το Api
+    // Ότι δεδομένα μας επιστρέφει το Api
     private ApiData apiData;
 
-    //Δήλωση buffer για την προηγούμενη αναζήτηση
+    // Δήλωση buffer για την προηγούμενη αναζήτηση
     private String previousSearchString;
 
-    //Λίστα με την αναζήτηση 
+    // Λίστα με την αναζήτηση
     private List<Article> currentPageArticles;
 
-    //Το άρθρο που επιλέχτηκε από τον χρήστη
+    // Το άρθρο που επιλέχτηκε από τον χρήστη
     private Article selectedArticle;
 
-    //Το μοντέλο της λίστας
+    // Το μοντέλο της λίστας
     private final DefaultListModel<String> listModel;
 
-    //Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για κάθε εικονίδιο
+    // Επειδή θα χρειαστούμε κάποια εικονίδια βάζω την διαμόρφωση εδώ για να ορίζω
+    // μετά στον constructor μόνο την εικόνα και να μην γράφω συνέχεια κώδικα για
+    // κάθε εικονίδιο
     private ImageIcon scaledIcon(String path, int w, int h) {
         Image img = new ImageIcon(MainForm.class.getResource(path)).getImage();
         Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    //Constructor της φόρμας
+    // Constructor της φόρμας
     public SearchForm() {
         initComponents();
 
-        //Αρχικοποιήσεις
-        // Βάζουμε αυτήν την γραμμή έτσι ώστε στην αναζήτηση αν κάποιος πατήσει και enter να εκτελεί την αναζήτηση
+        // Αρχικοποιήσεις
+        // Βάζουμε αυτήν την γραμμή έτσι ώστε στην αναζήτηση αν κάποιος πατήσει και
+        // enter να εκτελεί την αναζήτηση
         jTextField1.addActionListener(evt -> jButton1.doClick());
         Image pageIcon = new ImageIcon(MainForm.class.getResource("/resources/wikilogo.png")).getImage();
         setIconImage(pageIcon);
@@ -79,42 +82,43 @@ public class SearchForm extends javax.swing.JFrame {
         jButton6.setIcon(scaledIcon("/resources/arrow-left.png", 16, 16));
         jTextField1.setText("");
 
-        //Κεντράρισμα της φόρμας
+        // Κεντράρισμα της φόρμας
         setLocationRelativeTo(null);
-        //Η φόρμα δεν μπορεί να αλλάξει μέγεθος
+        // Η φόρμα δεν μπορεί να αλλάξει μέγεθος
         setResizable(false);
-        //Η φόρμα δεν μπορεί να κλείσει ώστε να μην κλείνει η εφαρμογή
+        // Η φόρμα δεν μπορεί να κλείσει ώστε να μην κλείνει η εφαρμογή
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        //Βάζουμε το μοντέλο στη λίστα
+        // Βάζουμε το μοντέλο στη λίστα
         listModel = new DefaultListModel<>();
         jList1.setModel(listModel);
 
-        //Για να μπορεί ο χρήστης να επιλέγει μόνο ένα άρθρο την φορά
+        // Για να μπορεί ο χρήστης να επιλέγει μόνο ένα άρθρο την φορά
         jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    //Επιστρέφει την αναζήτηση που έχει εισάγει ο χρήστης στο jTextField (χωρίς επιπλέον κενά και μέχρι 100 χαρακτήρες)
+    // Επιστρέφει την αναζήτηση που έχει εισάγει ο χρήστης στο jTextField (χωρίς
+    // επιπλέον κενά και μέχρι 100 χαρακτήρες)
     public String getSearchString() {
-        //Αφαίρεση επιπλέον κενών με Regex
+        // Αφαίρεση επιπλέον κενών με Regex
         String searchString = jTextField1.getText().trim().replaceAll("\\s+", " ");
-        //Αποθηκεύουμε μόνο τους πρώτους 100 χαρακτήρες
+        // Αποθηκεύουμε μόνο τους πρώτους 100 χαρακτήρες
         searchString = Helpers.getString(searchString, 100);
-        //Ενημερώνουμε την συμβολοσειρά αναζήτησης και την επιστρέφουμε
+        // Ενημερώνουμε την συμβολοσειρά αναζήτησης και την επιστρέφουμε
         jTextField1.setText(searchString);
         return searchString;
     }
 
-    //Εμφάνιση των άρθρων της τρέχουσας σελίδας
+    // Εμφάνιση των άρθρων της τρέχουσας σελίδας
     private void showCurrentPageArticles() {
-        //Βάζουμε στην λίστα τα αποτελέσματα της τρέχουσας σελίδας αποτελεσμάτων
+        // Βάζουμε στην λίστα τα αποτελέσματα της τρέχουσας σελίδας αποτελεσμάτων
         if (currentPageArticles != null && !currentPageArticles.isEmpty()) {
             setListArticles(currentPageArticles);
         } else {
             listModel.clear();
         }
 
-        //Ενημερώνουμε την ετικέτα με τα αποτελέσματα της τρέχουσας σελίδας
+        // Ενημερώνουμε την ετικέτα με τα αποτελέσματα της τρέχουσας σελίδας
         if (apiData.getCurrentPageResults() > 0) {
             int currentPageFrom = (apiData.getCurrentPage() - 1) * apiData.getLimit() + 1;
             int currentPageTo = currentPageFrom + apiData.getCurrentPageResults() - 1;
@@ -124,18 +128,18 @@ public class SearchForm extends javax.swing.JFrame {
             jLabel2.setText("Δεν βρέθηκαν άρθρα");
         }
 
-        //Διαχείρηση κουμπιών Προηγούμενο/Επόμενο
+        // Διαχείρηση κουμπιών Προηγούμενο/Επόμενο
         jButton3.setEnabled(apiData.hasPrevious());
         jButton4.setEnabled(apiData.hasNext());
 
-        //Ενημέρωση της προηγούμενης συμβολοσειράς αναζήτησης
+        // Ενημέρωση της προηγούμενης συμβολοσειράς αναζήτησης
         previousSearchString = getSearchString();
     }
 
-    //Πραγματοποιεί την αναζήτηση για την συγκεκριμένη συμβολοσειρά αναζήτησης
+    // Πραγματοποιεί την αναζήτηση για την συγκεκριμένη συμβολοσειρά αναζήτησης
     public void search(String searchString) {
 
-        //Guard ώστε να μην γίνει αναζήτηση εάν το jTextField είναι κενό
+        // Guard ώστε να μην γίνει αναζήτηση εάν το jTextField είναι κενό
         if (searchString.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
@@ -149,18 +153,18 @@ public class SearchForm extends javax.swing.JFrame {
             return;
         }
 
-        //Λαμβάνουμε την τρέχουσα σελίδα δεδομένων του API
+        // Λαμβάνουμε την τρέχουσα σελίδα δεδομένων του API
         apiData = new ApiData(searchString);
 
-        //Ενημερώνουμε τον πίνακα αναζητήσεων με την νέα αναζήτηση
+        // Ενημερώνουμε τον πίνακα αναζητήσεων με την νέα αναζήτηση
         DatabaseUse.storeSearch(searchString);
 
-        //Εμφανίζουμε τα άρθρα της τρέχουσας σελίδας
+        // Εμφανίζουμε τα άρθρα της τρέχουσας σελίδας
         currentPageArticles = apiData.getPageArticles();
         showCurrentPageArticles();
     }
 
-    //Εμφάνιση των αποτελεσμάτων της προηγούμενης σελίδας
+    // Εμφάνιση των αποτελεσμάτων της προηγούμενης σελίδας
     public void previousPage() {
         if (apiData.hasPrevious()) {
             currentPageArticles = apiData.getPreviousPageArticles();
@@ -168,7 +172,7 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    //Εμφάνιση των αποτελεσμάτων της επόμενης σελίδας
+    // Εμφάνιση των αποτελεσμάτων της επόμενης σελίδας
     public void nextPage() {
         if (apiData.hasNext()) {
             currentPageArticles = apiData.getNextPageArticles();
@@ -176,7 +180,8 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    //Τοποθετεί στην λίστα τα δεδομένα των άρθρων της τρέχουσας σελίδας αποτελεσμάτων
+    // Τοποθετεί στην λίστα τα δεδομένα των άρθρων της τρέχουσας σελίδας
+    // αποτελεσμάτων
     public void setListArticles(List<Article> articles) {
         listModel.clear();
         for (Article article : articles) {
@@ -184,39 +189,25 @@ public class SearchForm extends javax.swing.JFrame {
         }
     }
 
-    //Ανοίγει νέα φόρμα και συμπληρώνει τα νέα στοιχεία του άρθρου
-    //Ελέγχει πρώτα αν το άρθρο υπάρχει στη ΒΔ ώστε να εμφανίσει τα εμπλουτισμένα δεδομένα (R4)
+    // Ανοίγει νέα φόρμα και συμπληρώνει τα νέα στοιχεία του άρθρου
     public void showSelectedArticleDetails() {
         int indexSelected = jList1.getSelectedIndex();
         if (indexSelected != -1) {
-            //Εφόσον έχει επιλεγεί άρθρο το λαμβάνουμε από τη λίστα αποτελεσμάτων
+            // Εφόσον έχει επιλεγεί άρθρο το λαμβάνουμε από το API
             selectedArticle = currentPageArticles.get(indexSelected);
 
-            //Ελέγχουμε αν το άρθρο υπάρχει ήδη αποθηκευμένο στη ΒΔ (R4)
-            Article storedArticle = DatabaseUse.getArticle(selectedArticle.getPageid());
+            // Παίρνουμε και το πλήρες κείμενο του άρθρου από το API
+            String content = apiData.getPageContents(selectedArticle.getPageid());
+            selectedArticle.setContent(content);
 
-            if (storedArticle != null) {
-                //Το άρθρο υπάρχει στη ΒΔ: χρησιμοποιούμε τα εμπλουτισμένα δεδομένα (σχόλια, βαθμολογία, κατηγορία)
-                //Αν το content λείπει από τη ΒΔ, το φέρνουμε από το API
-                if (storedArticle.getContent() == null || storedArticle.getContent().isEmpty()) {
-                    String content = apiData.getPageContents(storedArticle.getPageid());
-                    storedArticle.setContent(content);
-                }
-                //Εμφάνιση με τα εμπλουτισμένα δεδομένα από τη ΒΔ
-                this.dispose();
-                ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(storedArticle, this);
-                articleDetailsForm.setVisible(true);
-            } else {
-                //Το άρθρο ΔΕΝ υπάρχει στη ΒΔ: το πλήρες κείμενο φέρνεται από το API
-                String content = apiData.getPageContents(selectedArticle.getPageid());
-                selectedArticle.setContent(content);
-                this.dispose();
-                ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(selectedArticle, this);
-                articleDetailsForm.setVisible(true);
-            }
+            // Κλείσιμο της φόρμας αναζήτησης και εμφάνιση την φόρμας προβολής του
+            // επιλεγμένου άρθρου
+            this.dispose();
+            ArticleDetailsForm articleDetailsForm = new ArticleDetailsForm(selectedArticle, this);
+            articleDetailsForm.setVisible(true);
 
         } else {
-            //Guard ώστε να μην γίνει αναζήτηση εάν δεν έχει επιλεγεί άρθρο
+            // Guard ώστε να μην γίνει αναζήτηση εάν δεν έχει επιλεγεί άρθρο
             JOptionPane.showMessageDialog(
                     this,
                     "Δεν έχετε επιλέξει άρθρο",
@@ -226,10 +217,13 @@ public class SearchForm extends javax.swing.JFrame {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -261,8 +255,14 @@ public class SearchForm extends javax.swing.JFrame {
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+
+            public int getSize() {
+                return strings.length;
+            }
+
+            public String getElementAt(int i) {
+                return strings[i];
+            }
         });
         jScrollPane1.setViewportView(jList1);
 
@@ -305,91 +305,106 @@ public class SearchForm extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
-                                .addGap(543, 543, 543)
-                                .addComponent(jButton4))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(50, 50, 50))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(59, 59, 59)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jButton3)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(jLabel2,
+                                                                        javax.swing.GroupLayout.DEFAULT_SIZE, 477,
+                                                                        Short.MAX_VALUE)
+                                                                .addGap(543, 543, 543)
+                                                                .addComponent(jButton4))
+                                                        .addComponent(jScrollPane1,
+                                                                javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jButton5,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 260,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                        Short.MAX_VALUE)
+                                                                .addComponent(jButton6,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(50, 50, 50))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 87,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 372,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE)))));
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
-                .addGap(29, 29, 29)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jButton6))
-                .addGap(46, 46, 46))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton2)
+                                        .addComponent(jButton1))
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jButton3)
+                                        .addComponent(jButton4))
+                                .addGap(29, 29, 29)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButton5)
+                                        .addComponent(jButton6))
+                                .addGap(46, 46, 46)));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Πλήκτρο αναζήτησης. Κάνει ανάκτηση της πρώτης σελίδας αποτελεσμάτων από το API
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    // Πλήκτρο αναζήτησης. Κάνει ανάκτηση της πρώτης σελίδας αποτελεσμάτων από το
+    // API
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         String searchString = getSearchString();
         search(searchString);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    //Καθαρισμός κειμένου αναζήτησης
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    // Καθαρισμός κειμένου αναζήτησης
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         jTextField1.setText("");
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
-    //Μετάβαση στην προηγούμενη σελίδα αποτελεσμάτων
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    // Μετάβαση στην προηγούμενη σελίδα αποτελεσμάτων
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
         previousPage();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }// GEN-LAST:event_jButton3ActionPerformed
 
-    //Μετάβαση στην επόμενη σελίδα αποτελεσμάτων
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    // Μετάβαση στην επόμενη σελίδα αποτελεσμάτων
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
         nextPage();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }// GEN-LAST:event_jButton4ActionPerformed
 
-    //Μετάβαση στην φόρμα προβολής του επιλεγμένου άρθρου
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    // Μετάβαση στην φόρμα προβολής του επιλεγμένου άρθρου
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
         showSelectedArticleDetails();
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }// GEN-LAST:event_jButton5ActionPerformed
 
-    //Επιστροφή στην αρχική οθόνη
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    // Επιστροφή στην αρχική οθόνη
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
         this.dispose();
         WikiViewer.mainForm.setVisible(true);
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }// GEN-LAST:event_jButton6ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
