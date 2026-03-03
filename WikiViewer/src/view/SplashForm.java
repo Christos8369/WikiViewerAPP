@@ -8,10 +8,12 @@ public class SplashForm extends javax.swing.JFrame {
 
         public SplashForm() {
                 initComponents();
-
+                setSize(600, 335); // Ρυθμίζουμε το μέγεθος (επειδή βάλαμε Null Layout)
+                setLocationRelativeTo(null); // Κεντράρισμα ΑΦΟΥ έχει πάρει το σωστό μέγεθος
         }
 
         @SuppressWarnings("unchecked")
+        // <editor-fold defaultstate="collapsed" desc="Generated
         // <editor-fold defaultstate="collapsed" desc="Generated
         // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -46,7 +48,7 @@ public class SplashForm extends javax.swing.JFrame {
         getContentPane().add(jLabel3);
         jLabel3.setBounds(10, 300, 580, 16);
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/splash.jpg"))); // NOI18N
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/splash.jpg"))); // NOI18N
         jLabel6.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         getContentPane().add(jLabel6);
         jLabel6.setBounds(0, 0, 600, 340);
