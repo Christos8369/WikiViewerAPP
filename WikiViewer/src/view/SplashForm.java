@@ -1,0 +1,58 @@
+package view;
+
+/**
+ * Splash Screen της εφαρμογής.
+ * Εμφανίζεται για 4 δευτερόλεπτα κατά την εκκίνηση.
+ */
+public class SplashForm extends javax.swing.JFrame {
+
+    public SplashForm() {
+        initComponents();
+
+        // Προσθήκη περιγράμματος για να φαίνεται ωραίο
+        getRootPane().setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(100, 100, 100), 2));
+
+        // Προσθήκη εικονιδίου στην taskbar (αν βρεθεί)
+        try {
+            java.awt.Image pageIcon = new javax.swing.ImageIcon(getClass().getResource("/resources/wikilogo.png"))
+                    .getImage();
+            setIconImage(pageIcon);
+        } catch (Exception e) {
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/splash.jpg"))); // NOI18N
+        jLabel1.setText(
+                "<html><center><h1 style=\"color: white;\">WikiViewer</h1><h3 style=\"color: white;\">Η εγκυκλοπαίδεια στον υπολογιστή σας</h3><br><br><br><br><i style=\"color: white;\">Φόρτωση δεδομένων...</i></center></html>");
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>
+
+    // Variables declaration - do not modify
+    private javax.swing.JLabel jLabel1;
+    // End of variables declaration
+}

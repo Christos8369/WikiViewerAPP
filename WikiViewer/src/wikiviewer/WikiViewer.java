@@ -40,16 +40,32 @@ public class WikiViewer {
      * @param args Οι παράμετροι από τη γραμμή εντολών.
      */
     public static void main(String[] args) {
-        // Δημιουργία των πινάκων της βάσης δεδομένων αν δεν υπάρχουν
+        // 1. Εμφάνιση Splash Screen
+        view.SplashForm splash = new view.SplashForm();
+        splash.setVisible(true);
+
+        // 2. Δημιουργία των πινάκων της βάσης δεδομένων αν δεν υπάρχουν
         DatabaseCreation.CreateDatabaseTables();
 
-        // Δημιουργία του entity manager που χειρίζεται τη βάση δεδομένων
+        // 3. Δημιουργία του entity manager που χειρίζεται τη βάση δεδομένων
         DatabaseUse.createEntityManager();
 
-        // Εισαγωγή των κατηγοριών στον πίνακα category αν δεν υπάρχουν
+        // 4. Εισαγωγή των κατηγοριών στον πίνακα category αν δεν υπάρχουν
         DatabaseUse.insertCategories(categoryNames);
 
-        // Δημιουργία και εμφάνιση της αρχικής φόρμας
+        // 5. Καθυστέρηση παρασκηνίου (ώστε το Splash να φανεί ακριβώς 4 δευτερόλεπτα)
+        try {
+            // Ο χρόνος που ήδη πέρασε για τη βάση είναι μικρός,
+            // αλλά περιμένουμε άλλα 4 δεύτερα.
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            // Η εκτέλεση συνεχίζεται κανονικά σε περίπτωση διακοπής
+        }
+
+        // 6. Κλείσιμο Splash Screen
+        splash.dispose();
+
+        // 7. Δημιουργία και εμφάνιση της αρχικής φόρμας
         mainForm = new MainForm();
         mainForm.setVisible(true);
     }
