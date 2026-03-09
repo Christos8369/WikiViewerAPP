@@ -20,13 +20,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 //POJO κλάση για τον πίνακα Category
-
+/**
+ * POJO κλάση για τον πίνακα Category.
+ * Αντιστοιχεί σε εγγραφή του πίνακα CATEGORY στη βάση δεδομένων.
+ */
 @Entity
 @Table(name = "CATEGORY")
 @NamedQueries({
-    @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
-    @NamedQuery(name = "Category.findByCategoryid", query = "SELECT c FROM Category c WHERE c.categoryid = :categoryid"),
-    @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
+        @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
+        @NamedQuery(name = "Category.findByCategoryid", query = "SELECT c FROM Category c WHERE c.categoryid = :categoryid"),
+        @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name") })
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -91,7 +94,8 @@ public class Category implements Serializable {
             return false;
         }
         Category other = (Category) object;
-        if ((this.categoryid == null && other.categoryid != null) || (this.categoryid != null && !this.categoryid.equals(other.categoryid))) {
+        if ((this.categoryid == null && other.categoryid != null)
+                || (this.categoryid != null && !this.categoryid.equals(other.categoryid))) {
             return false;
         }
         return true;
